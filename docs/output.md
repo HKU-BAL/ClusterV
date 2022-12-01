@@ -8,7 +8,7 @@
     ├── ${OUTPUT_DIR}
     │   ├── consensus                   # output of clusterV
     │   │   ├── all_report.tsv          # drug resistance report for found subtypes
-    │   │   ├── all_info.tsv            # raw statistics for all found subtypes, with abundance information
+    │   │   ├── all_info.tsv            # statistics for all found subtypes, with abundance information
     │   │   ├── id_1_report.tsv         # HIVDB report for subtype 1
     │   │   ├── id_1_report.json        # [raw HIVDB](https://hivdb.stanford.edu/page/release-notes/#json.output) report output for subtype 1
     │   │   ├── id_1.fasta              # consensus for subtype 1
