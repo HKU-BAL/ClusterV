@@ -6,12 +6,12 @@
 
     .
     ├── ${OUTPUT_DIR}
-    │   ├── consensus           		# output of clusterV
+    │   ├── consensus                   # output of clusterV
     │   │   ├── all_report.tsv          # drug resistance report for found subtypes
     │   │   ├── all_info.tsv            # raw statistics for all found subtypes, with abundance information
     │   │   ├── id_1_report.tsv         # HIVDB report for subtype 1
     │   │   ├── id_1_report.json        # [raw HIVDB](https://hivdb.stanford.edu/page/release-notes/#json.output) report output for subtype 1
-    │   │   ├── id_1.fasta				# consensus for subtype 1
+    │   │   ├── id_1.fasta              # consensus for subtype 1
     │   │   ├── id_1                    # data directory for subtype 1
     │   │   │   ├── id_1.bam            # all read alignment in bam file for subtype 1
     │   │   │   ├── id_1_cs.bam         # single consensus alignment for subtype 1
@@ -21,9 +21,9 @@
     │   │   ├── id_2                    # data directory for subtype 2
     │   │   │   └── ...
     │   │   └── ...
-    │   ├── clustering          		# working files for clusterV algorithm
-    │   │   ├── all_clusters_info.tsv	# clustering results, subtypes, abundance, and files location information 
-    │   │   ├── 1                       # first iteration
+    │   ├── clustering                      # working files for clusterV algorithm
+    │   │   ├── all_clusters_info.tsv       # clustering results, subtypes, abundance, and files location information 
+    │   │   ├── 1                           # first iteration
     │   │   │   └── 1.tagged.bam  		# bam file with subtype labeling after 1st iteration                 
     │   │   │   └── 1.tagged.tag1.bam  	# subtype 1 after 1st iteration                 
     │   │   │   └── 1.tagged.tag2.bam  	# subtype 2 after 1st iteration                 
