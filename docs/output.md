@@ -61,6 +61,8 @@ all drug resistance report is available at `all_report.tsv`
 
 ### statistics for all found subtypes, with abundance information
 
+all subtype information is available at `all_info.tsv`
+
 | column                                               | description                                                                                                                                |
 |------------------------------------------------------|--------------------------------------------------------------------------------------------------------------------------------------------|
 | _idx                                                 | subtype ID                                                                                                                                 |
@@ -73,4 +75,3 @@ all drug resistance report is available at `all_report.tsv`
 | percentage                                           | subtype's abundance                                                                                                                        |
 | _v_info:coverage;snp_c;indel_c;median_af;af1;af2;af3 | subtype's coverage, # of SNP, # of INDEL, the median of AF, # of raw AF in [0, 0.3], # of raw AF in [0.3, 0.7], # of raw AF in [0.7, 1.0]  |
 
-all subtype information is available at `all_info.tsv`
