@@ -11,6 +11,7 @@ Email: rbluo@cs.hku.hk, jhsu@cs.hku.hk
 ## Introduction
 ClusterV is a standalone pipeline for accurately identifying HIV subtypes from ONT sequencing data.  ClusterV takes the alignment BAM file, and target region BED files (defining the target regions) of the HIV data as input, and outputs all found subtypes with their abundance, alignment, variants (SNPs and INDELs), and the drug resistance reports. ClusterV consists of three major modules, 1) filtering and initialing, where we run quality control at alignment files; 2) subtypes finding, we iteratively run variant calling - hierarchical clustering to find all variants and subtypes; 3) HIV mutation finding, where we generate consensus from each subtype and get all HIV drug resistance mutations reports. 
 
+<img src="../docs/github_wf.png" width = "800" alt="ClusterV wf">
 
 ---
 
