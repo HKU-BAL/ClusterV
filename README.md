@@ -89,8 +89,8 @@ docker run -it hkubal/clusterv:latest python /opt/bin/ClusterV/cv.py --help
 
 ## Usage
 
-
 For more oprions, please check [options page](/docs/options.md).
+
 For understanding the output files, please check [output page](/docs/output.md).
 
 ```bash
