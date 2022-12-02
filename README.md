@@ -25,6 +25,7 @@ ClusterV is a standalone pipeline for accurately identifying HIV subtypes from O
 * [Usage](#usage)
 * [Options](/docs/options.md)
 * [Understand output files](/docs/output.md)
+* [Quick demo](#quick-demo)
 * [Using localized HIVdb](#using-localized-hivdb)
 
 ## Installation
