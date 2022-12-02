@@ -71,11 +71,20 @@ Required parameters:
 
 | Parameters | Type | Default | Description                   |
 |------------|------|---------|-------------------------------|
-| --out_dir  | PATH | None    | Output folder                 |
+| --out_dir  | PATH | None    | output folder                 |
 | --bam_fn   | FILE | None    | input bam file                |
 | --bed_fn   | FILE | None    | input target regions bed file |
 | --ref_fn   | FILE | None    | input reference fasta         |
 
+Other parameters:
+| Parameters                | Type | Default | Description                                                                   |
+|---------------------------|------|---------|-------------------------------------------------------------------------------|
+| General options           |      |         |                                                                               |
+| --threads                 | INT  | 48      | running threads, we recommend using 48 or above                               |
+| --clair_ensemble_threads  | INT  | 16      | Clair-Ensemble threads, we recommend using 16                                 |
+| --subtype_parallel        | INT  | 3       | [EXPERIMENTAL] number of sutypes parallel run Clair                           |
+| initial filtering options |      |         |                                                                               |
+| --indel_l                 | INT  | 50      | filtering read with indel length > indel_l [50], set [0] to disable filtering |
 
 ## Quick demo
 
