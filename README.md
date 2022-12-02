@@ -115,12 +115,12 @@ python ${CV_DIR}/cv.py ClusterV \
 ```
 # make sure you are in the clusterV environment by using `conda activate clusterV`
 
-# step 1 downloda testing files
+# step 1, download testing files
 cd ClusterV
 mkdir -p testing
 (cd testing && wget http://www.bio8.cs.hku.hk/ClusterV/clusterv_testing.tar.gz && tar -xf clusterv_testing.tar.gz && rm clusterv_testing.tar.gz )
 
-# run testing
+# step2, run testing
 TESTING_DIR=`pwd`/testing
 INPUT_REF=${TESTING_DIR}/HIV_1.fasta
 INPUT_BED=${TESTING_DIR}/HIV_1_amplicon_region.bed

@@ -1,6 +1,6 @@
 
 
-## Understand output file
+## Understand outputs file
 
 ### The directory structure for the clusterV results is as below:
 
