@@ -23,8 +23,8 @@ ClusterV is a standalone pipeline for accurately identifying HIV subtypes from O
   + [Option 2. Build an anaconda virtual environment](#option-2-build-an-anaconda-virtual-environment)
   + [Option 3. Docker Dockerfile](#option-2-docker-dockerfile)
 * [Usage](#usage)
-* [Options](/docs/options.md)
-* [Understand output files](/docs/output.md)
+  + [Options](/docs/options.md)
+  + [Understand output files](/docs/output.md)
 * [Quick demo](#quick-demo)
 * [Using localized HIVdb](#using-localized-hivdb)
 
