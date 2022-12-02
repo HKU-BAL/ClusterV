@@ -52,7 +52,12 @@ INPUT_BED="{YOUR_INPUT_BED}"        # Input BED file for defining the target reg
 SAMPLE_ID="{YOUR_SAMPLE_ID}"        # Sample ID
 OUTPUT_DIR="{YOUR_OUTPUT_DIR}"      # Output path
 
-python cv.py ClusterV --bam_fn ${INPUT_BAM} --ref_fn ${INPUT_REF} --bed_fn ${INPUT_BED} --sample_id ${SAMPLE_ID} --out_dir ${OUTPUT_DIR}
+python cv.py ClusterV \
+ --bam_fn ${INPUT_BAM} \
+ --ref_fn ${INPUT_REF} \
+ --bed_fn ${INPUT_BED} \
+ --sample_id ${SAMPLE_ID} \
+ --out_dir ${OUTPUT_DIR}
 ```
 
 
