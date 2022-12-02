@@ -1,6 +1,10 @@
 # ClusterV: finding HIV subtypes from ONT sequencing data
 
 [![License](https://img.shields.io/badge/License-BSD%203--Clause-blue.svg)](https://opensource.org/licenses/BSD-3-Clause) 
+[![docker](https://img.shields.io/badge/build-docker-brightgreen)](https://www.docker.com/)
+[![ONT](https://img.shields.io/badge/Support-ONT-005c75)](https://nanoporetech.com/)
+
+
 
 
 Contact: Ruibang Luo, Junhao Su  
