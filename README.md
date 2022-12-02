@@ -27,7 +27,7 @@ ClusterV is a standalone pipeline for accurately identifying HIV subtypes from O
   + [Option 2. Build an anaconda virtual environment](#option-2-build-an-anaconda-virtual-environment)
   + [Option 3. Docker Dockerfile](#option-2-docker-dockerfile)
 * [Usage](#usage)
-  + [Options](/docs/options.md)
+  + [Parameters](/docs/options.md)
   + [Understand output files](/docs/output.md)
 * [Quick demo](#quick-demo)
 * [Using localized HIVdb](#using-localized-hivdb)
@@ -94,9 +94,9 @@ docker run -it hkubal/clusterv:latest python /opt/bin/ClusterV/cv.py --help
 
 ## Usage
 
-For more oprions, please check [options page](/docs/options.md).
+For more parameters setting, please check the [parameters page](/docs/options.md).
 
-For understanding the output files, please check [output page](/docs/output.md).
+For understanding the output files, please check the [output page](/docs/output.md).
 
 ```bash
 CV_DIR="{ClusterV repo path}"
@@ -144,7 +144,9 @@ python ${CV_DIR}/cv.py ClusterV \
 
 ## Using localized HIVdb
 
-ClusterV uses online API to query drug resistance mutations in default. If you wish to use the [localized HIVdb]((https://github.com/hivdb/sierra#start-sierra-with-docker) for HIV drug resistance mutation dection, please launch the HIVdb's Sierra web service locally, and use the following setting to run the ClusterV program.
+ClusterV uses online API to query drug resistance mutations in default. 
+
+If you wish to use the [localized HIVdb]((https://github.com/hivdb/sierra#start-sierra-with-docker) for HIV drug resistance mutation dection, please launch the HIVdb's Sierra web service locally, and use the following setting to run the ClusterV program.
 
 ```
 # Step 1, Start Sierra in local, as instructed in [this page](https://github.com/hivdb/sierra#start-sierra-with-docker).
