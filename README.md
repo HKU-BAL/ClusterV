@@ -25,7 +25,7 @@ ClusterV is a standalone pipeline for accurately identifying HIV subtypes from O
   + [Option 4. Docker Dockerfile](#option-4-docker-dockerfile)
 * [Usage](#usage)
 * [Options](/docs/options.md)
-* [Understand output file](/docs/output.md)
+* [Understand output files](/docs/output.md)
 * [Using localized HIVdb](#using-localized-hivdb)
 
 ## Installation
@@ -52,7 +52,7 @@ pypy3 -m pip install --no-cache-dir intervaltree==3.0.2
 
 
 For more oprions, please check [options page](/docs/options.md).
-For understanding the output files, please check [output page](/docs/output.md)
+For understanding the output files, please check [output page](/docs/output.md).
 
 ```bash
 CV_DIR="{ClusterV repo path}"
