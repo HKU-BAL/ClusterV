@@ -11,12 +11,13 @@ from cv.filter_large_indel import filter_read
 
 # filtering original bam to ensure read cover both end of target region
 # run clair ensemble to get initial variants list
-def intial_run(args):
+def initial_run(args):
     _bam = args.bam_fn
     _bed = args.bed_fn
     _ref = args.ref_fn
     _sample_id = args.sample_id
     _out_dir = args.out_dir
+    _cn_threads = args.clair_ensemble_threads
 
     cmd = 'mkdir -p %s' % (_out_dir)
     _run_command(cmd)
@@ -66,10 +67,9 @@ def intial_run(args):
     _py_s_d = os.path.dirname(os.path.abspath(__file__))
     run_clair_path = "%s/run_Clair_ensemble_cv.sh" % (_py_s_d)
 
-    cmd = "time bash %s %s/%s_f.bam %s %s %s %s/%s.v |& tee %s/%s.v/run.log" % \
-    (run_clair_path, _out_dir, _sample_id, _sample_id, _ref, _bed, _out_dir, _sample_id, _out_dir, _sample_id)
+    cmd = "time bash %s %s/%s_f.bam %s %s %s %s/%s.v %s > %s/%s.v/run.log" % \
+    (run_clair_path, _out_dir, _sample_id, _sample_id, _ref, _bed, _out_dir, _sample_id, _cn_threads, _out_dir, _sample_id)
     _run_command(cmd)
-
 
 
 def main():
@@ -93,13 +93,16 @@ def main():
     parser.add_argument('--indel_l', type=int, default=50,
                         help="filtering read with indel length > indel_l [50], set [0] to disable filtering, optional")
 
+    parser.add_argument('--clair_ensemble_threads', type=int, default=16,
+                        help="Clair-Ensemble threads, we recommend using 16, [16] optional")
+
     args = parser.parse_args()
 
     if len(sys.argv[1:]) == 0:
         parser.print_help()
         sys.exit(1)
 
-    intial_run(args)
+    initial_run(args)
 
 if __name__ == "__main__":
     main()

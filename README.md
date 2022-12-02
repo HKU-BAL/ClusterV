@@ -34,8 +34,11 @@ ClusterV is a standalone pipeline for accurately identifying HIV subtypes from O
 
 ```
 conda env create -f clusterV.yml
+conda activate clusterV 
+
 pypy3 -m ensurepip
 pypy3 -m pip install --no-cache-dir intervaltree==3.0.2
+
 ```
 
 
@@ -48,23 +51,30 @@ INPUT_REF="{YOUR_INPUT_FASTA}"      # Input reference Fasta file
 INPUT_BED="{YOUR_INPUT_BED}"        # Input BED file for defining the target region
 SAMPLE_ID="{YOUR_SAMPLE_ID}"        # Sample ID
 OUTPUT_DIR="{YOUR_OUTPUT_DIR}"      # Output path
-MIN_R_SUPPORT=50                    # minimal read support for forming a subtype
-TOP_K_SUBTYPE=25                    # number of top K subtypes to predict
 
-# STEP 1, run filtering and initializing
-python cv.py run_initial_call --bam_fn ${INPUT_BAM} --ref_fn ${INPUT_REF} --bed_fn ${INPUT_BED} --sample_id ${SAMPLE_ID} --out_dir ${OUTPUT_DIR}
-
-
-# STEP 2, run clustering
-WORK_BAM=${OUTPUT_DIR}/${SAMPLE_ID}_f.bam 
-WORK_VCF=${OUTPUT_DIR}/${SAMPLE_ID}.v/out.vcf
-WORK_DIR=${OUTPUT_DIR}/${SAMPLE_ID}/clustering
-python cv.py ClusterV --ref_fn ${INPUT_REF} --bed_fn ${INPUT_BED} --bam ${WORK_BAM} --vcf ${WORK_VCF} --out_dir ${WORK_DIR} --sample_id ${SAMPLE_ID} --top_k ${TOP_K_SUBTYPE} --n_min_supports ${MIN_R_SUPPORT}
-
-
-# STEP 3, generate consesus and find drug resistance mutation
-WORK_OUT=${OUTPUT_DIR}/consensus
-WORK_TSV=${OUTPUT_DIR}/clustering/all_clusters_info.tsv
-python ${CV_DIR}/cv.py get_consensus --ref_fn ${INPUT_REF} --bed_fn ${INPUT_BED} --tar_tsv ${WORK_TSV} --out_dir ${WORK_OUT}
+python cv.py ClusterV --bam_fn ${INPUT_BAM} --ref_fn ${INPUT_REF} --bed_fn ${INPUT_BED} --sample_id ${SAMPLE_ID} --out_dir ${OUTPUT_DIR}
 ```
 
+
+### Using localized  HIVdb
+
+ClusterV using online API to query drug resistance mutations in defalut. If you wish to using the localized HIVdb for HIVdb, please launch the HIVdb's Sierra web sierra web service in local, please using the following setting to run the ClusterV programe.
+
+### Step 1
+
+Start Sierra in local, as instructed in [this page](https://github.com/hivdb/sierra#start-sierra-with-docker).
+
+```
+docker pull hivdb/sierra:latest
+docker run -it --publish=8111:8080 hivdb/sierra dev
+
+```
+
+### Step 2
+
+Run ClusterV with addtional "--hivdb_url" setting.
+
+```
+# run ClusterV with "--hivdb_url"
+python cv.py ClusterV --hivdb_url http://localhost:8111/sierra/rest/graphql --bam_fn ${INPUT_BAM} --ref_fn ${INPUT_REF} --bed_fn ${INPUT_BED} --sample_id ${SAMPLE_ID} --out_dir ${OUTPUT_DIR}
+```

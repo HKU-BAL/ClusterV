@@ -6,8 +6,9 @@ VERSION="1.0"
 CV_SCRIPTS_FOLDER="cv"
 
 cv_folder = [
-    "run_initial_call",
     "ClusterV",
+    "run_initial_call",
+    "run_ClusterV",
     "get_consensus",
     "update_vcf_af",
     "tag_read",
@@ -45,6 +46,7 @@ def main():
     if sys.argv[1] == "-v" or sys.argv[1] == "--version":
         print("ClusterV: version {0}".format(VERSION))
         sys.exit(0)
+    print("ClusterV: version {0}".format(VERSION))
 
     submodule_name = sys.argv[1]
     if (

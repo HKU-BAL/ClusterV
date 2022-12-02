@@ -7,10 +7,14 @@ REFERENCE_FASTA_FILE_PATH=$3
 BED_F=$4
 WORKING_DIRECTORY=$5
 
+#PARALLEL_THREADS="16"
+PARALLEL_THREADS=$6
+echo "running Clair-Ensemble"
 echo "input bam: $BAM_FILE_PATH"
 echo "sample ID: $SAMPLE_NAME"
 echo "input ref: $REFERENCE_FASTA_FILE_PATH"
 echo "input bed: $BED_F"
+echo "parallel threads: $PARALLEL_THREADS"
 echo "working output dir: $WORKING_DIRECTORY"
 
 DIR=$( dirname -- "$0"; )
@@ -26,7 +30,6 @@ CLAIR_MODELS=(
 CLAIR="$CLAIR_PATH/Clair.beta.ensemble.cpu/clair.py"
 CLAIR_HOME_DIR=`dirname ${CLAIR}`
 ENSEMBLE_CPP_EXECUTABLE="${CLAIR_HOME_DIR}/clair/ensemble"
-PARALLEL_THREADS="16"
 RETRIES=3
 MIN_AF=0.1
 DCOV=(2000)

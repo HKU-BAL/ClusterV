@@ -67,6 +67,8 @@ def run_get_consensus(args):
     _hivdb_url = args.hivdb_url
     _number_of_read_for_consense = args.number_of_read_for_consense
     _hivdb_url_option = '' if _hivdb_url == '' else "--url %s" % (_hivdb_url)
+    _flye_genome_size = args.flye_genome_size
+    _threads = args.threads
     _py_s_d = os.path.dirname(os.path.abspath(__file__))
     print(_py_s_d)
 
@@ -134,21 +136,20 @@ def run_get_consensus(args):
             _new_cs_vcf = "%s/%s_cs.vcf" % (_out_dir, _new_id) 
             # get bam
             cmd = 'cp %s %s; cp %s.bai %s.bai;' % (_ori_bam, _new_bam, _ori_bam, _new_bam)
-            _run_command(cmd)
+            _run_command(cmd, False)
 
             # get vcf
             cmd = 'bcftools filter -e "FORMAT/AF<=0.2" %s | bcftools view -O z -o %s; bcftools index %s' % (_ori_vcf, _new_vcf, _new_vcf)
-            _run_command(cmd)
+            _run_command(cmd, False)
 
-#             get consensus
-#             get read from bam
+            # get consensus
             cmd = 'samtools fasta %s > %s_1' % (_new_bam, _new_bam_read)
-            _run_command(cmd)
+            _run_command(cmd, False)
             cmd = 'head -n %d %s_1 > %s; rm %s_1' % (_number_of_read_for_consense, _new_bam_read, _new_bam_read, _new_bam_read)
-            _run_command(cmd)
+            _run_command(cmd, False)
 
             # run flye
-            cmd = 'flye --nano-raw %s --threads 32 --out-dir %s -m 1000 -g 5k' % (_new_bam_read, _new_cs_dir)
+            cmd = 'flye --nano-raw %s --threads %s --out-dir %s -m 1000 -g %s >/dev/null 2>&1' % (_new_bam_read, _threads, _new_cs_dir, _flye_genome_size)
             _run_command(cmd)
 
             # run alignmnet for visulization
@@ -280,11 +281,14 @@ def run_get_consensus(args):
     all_c_l = _u_all_c_l
 
     # subtype's info.
+    print("=======\nFound %s subtype(s)" % (len(_info_tsv_l) - 1))
     new_tsv = "%s/all_info.tsv" % (_all_out_dir)
     with open(new_tsv, 'w+') as F:
         for r in _info_tsv_l:
             F.write("\t".join([str(k) for k in r]))
             F.write("\n")
+            print("%s, %s" % (r[0], r[7]))
+    print('all subtype info. at %s' % (new_tsv))
 
     # consensus info. 
     new_tsv = "%s/info.tsv" % (_all_out_dir)
@@ -373,7 +377,7 @@ def run_get_consensus(args):
         _tar1.loc['All'] = _tar1.sum(0)
 
         _d1, _s1 = _tar1.shape
-        print(_d1, _s1)
+        #print(_d1, _s1)
         _tar1 = _tar1.replace(0, np.nan)
 
         _cell_w = 1
@@ -448,6 +452,12 @@ def main():
     parser.add_argument('--hivdb_url', type=str, default="",
                         help="hivdb url defalut query from internet, for localize the HIVDB, please check https://github.com/hivdb/sierra, and update this setting accordingly, e.g. \
                         by using --hivdb_url http://localhost:8111/sierra/rest/graphql")
+
+    parser.add_argument('--threads', type=int, default=48,
+                        help="running threads, we recommend using 48 or above, [48] optional")
+
+    parser.add_argument('--flye_genome_size', type=str, default="5k",
+                        help="[EXPERIMEANTAL], flye --genome-size for generating consensus, we recommand using 5k for HIV genome")
 
     args = parser.parse_args()
 
