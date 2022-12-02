@@ -33,25 +33,31 @@ ClusterV is a standalone pipeline for accurately identifying HIV subtypes from O
 ### Option 2. Build an anaconda virtual environment
 
 ```
+# clone ClusterV code
+git clone https://github.com/HKU-BAL/ClusterV.git
+cd ClusterV
+
+# create env
 conda env create -f clusterV.yml
 conda activate clusterV 
 
 pypy3 -m ensurepip
 pypy3 -m pip install --no-cache-dir intervaltree==3.0.2
+
 ```
 
 
 ## Usage
 
 ```bash
-
+CV_DIR="{ClusterV repo path}"
 INPUT_BAM="{YOUR_INPUT_BAM}"        # Input BAM file
 INPUT_REF="{YOUR_INPUT_FASTA}"      # Input reference Fasta file
 INPUT_BED="{YOUR_INPUT_BED}"        # Input BED file for defining the target region
 SAMPLE_ID="{YOUR_SAMPLE_ID}"        # Sample ID
 OUTPUT_DIR="{YOUR_OUTPUT_DIR}"      # Output path
 
-python cv.py ClusterV \
+python ${CV_DIR}/cv.py ClusterV \
  --bam_fn ${INPUT_BAM} \
  --ref_fn ${INPUT_REF} \
  --bed_fn ${INPUT_BED} \
@@ -59,6 +65,44 @@ python cv.py ClusterV \
  --out_dir ${OUTPUT_DIR}
 ```
 
+## Options
+
+Required parameters:
+
+| Parameters | Type | Default | Description                   |
+|------------|------|---------|-------------------------------|
+| --out_dir  | PATH | None    | Output folder                 |
+| --bam_fn   | FILE | None    | input bam file                |
+| --bed_fn   | FILE | None    | input target regions bed file |
+| --ref_fn   | FILE | None    | input reference fasta         |
+
+
+## Quick demo
+
+```
+# make sure you are in the clusterV environment by using `conda activate clusterV`
+
+# step 1 downloda testing files
+cd ClusterV
+mkdir -p testing
+(cd testing && wget http://www.bio8.cs.hku.hk/ClusterV/clusterv_testing.tar.gz && tar -xf clusterv_testing.tar.gz && rm clusterv_testing.tar.gz )
+
+# run testing
+TESTING_DIR=`pwd`/testing
+INPUT_REF=${TESTING_DIR}/HIV_1.fasta
+INPUT_BED=${TESTING_DIR}/HIV_1_amplicon_region.bed
+INPUT_BAM=${TESTING_DIR}/mix_ds.bam
+SAMPLE_ID="mix_ds"
+OUTPUT_DIR=${TESTING_DIR}/out
+CV_DIR=`pwd`
+
+python ${CV_DIR}/cv.py ClusterV \
+--bam_fn ${INPUT_BAM} \
+--ref_fn ${INPUT_REF} \
+--bed_fn ${INPUT_BED} \
+--sample_id ${SAMPLE_ID} \
+--out_dir ${OUTPUT_DIR}
+```
 
 ## Using localized HIVdb
 
@@ -70,7 +114,7 @@ docker pull hivdb/sierra:latest
 docker run -it --publish=8111:8080 hivdb/sierra dev
 
 # Step 2, Run ClusterV with addtional "--hivdb_url" setting.
-python cv.py ClusterV \
+python ${CV_DIR}/cv.py ClusterV \
 --hivdb_url http://localhost:8111/sierra/rest/graphql \
 --bam_fn ${INPUT_BAM} \
 --ref_fn ${INPUT_REF} \
