@@ -25,7 +25,7 @@ ClusterV is a standalone pipeline for accurately identifying HIV subtypes from O
   + [Option 4. Docker Dockerfile](#option-4-docker-dockerfile)
 * [Usage](#usage)
 * [Understand output file](/docs/output.md)
-
+* [Using localized HIVdb](#using-localized-hivdb)
 
 ## Installation
 
@@ -38,11 +38,10 @@ conda activate clusterV
 
 pypy3 -m ensurepip
 pypy3 -m pip install --no-cache-dir intervaltree==3.0.2
-
 ```
 
 
-### General Usage
+## Usage
 
 ```bash
 
@@ -61,25 +60,21 @@ python cv.py ClusterV \
 ```
 
 
-### Using localized  HIVdb
+## Using localized HIVdb
 
 ClusterV using online API to query drug resistance mutations in defalut. If you wish to using the localized HIVdb for HIVdb, please launch the HIVdb's Sierra web sierra web service in local, please using the following setting to run the ClusterV programe.
 
-### Step 1
-
-Start Sierra in local, as instructed in [this page](https://github.com/hivdb/sierra#start-sierra-with-docker).
-
 ```
+# Step 1, Start Sierra in local, as instructed in [this page](https://github.com/hivdb/sierra#start-sierra-with-docker).
 docker pull hivdb/sierra:latest
 docker run -it --publish=8111:8080 hivdb/sierra dev
 
-```
-
-### Step 2
-
-Run ClusterV with addtional "--hivdb_url" setting.
-
-```
-# run ClusterV with "--hivdb_url"
-python cv.py ClusterV --hivdb_url http://localhost:8111/sierra/rest/graphql --bam_fn ${INPUT_BAM} --ref_fn ${INPUT_REF} --bed_fn ${INPUT_BED} --sample_id ${SAMPLE_ID} --out_dir ${OUTPUT_DIR}
+# Step 2, Run ClusterV with addtional "--hivdb_url" setting.
+python cv.py ClusterV \
+--hivdb_url http://localhost:8111/sierra/rest/graphql \
+--bam_fn ${INPUT_BAM} \
+--ref_fn ${INPUT_REF} \
+--bed_fn ${INPUT_BED} \
+--sample_id ${SAMPLE_ID} \
+--out_dir ${OUTPUT_DIR}
 ```
