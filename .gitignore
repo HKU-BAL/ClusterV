@@ -3,3 +3,5 @@ testing/
 *pyc
 .ipynb_checkpoints/
 ori_testing/
+*.zip
+tmp_zip/

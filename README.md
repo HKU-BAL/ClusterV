@@ -21,8 +21,7 @@ ClusterV is a standalone pipeline for accurately identifying HIV subtypes from O
 * [Installation](#installation)
   + [Option 1. Docker pre-built image](#option-1-docker-pre-built-image)
   + [Option 2. Build an anaconda virtual environment](#option-2-build-an-anaconda-virtual-environment)
-  + [Option 3. Bioconda](#option-3-bioconda)
-  + [Option 4. Docker Dockerfile](#option-4-docker-dockerfile)
+  + [Option 3. Docker Dockerfile](#option-2-docker-dockerfile)
 * [Usage](#usage)
 * [Options](/docs/options.md)
 * [Understand output files](/docs/output.md)
@@ -30,6 +29,31 @@ ClusterV is a standalone pipeline for accurately identifying HIV subtypes from O
 
 ## Installation
 
+### Option 1. Docker pre-built image
+A pre-built docker image is available here. With it you can run Clair3-Trio using a single command
+Caution: Absolute path is needed for both `INPUT_DIR` and `OUTPUT_DIR`.
+
+```
+INPUT_DIR=`pwd`                                     # input path, e.g. /input
+INPUT_REF=${INPUT_DIR}/HIV_1.fasta                  # change your reference file name here
+INPUT_BED=${INPUT_DIR}/HIV_1_amplicon_region.bed    # change your bed file name here
+INPUT_BAM=${INPUT_DIR}/mix_ds.bam                   # change your bam file name here
+SAMPLE_ID="mix_ds"                                  # change your sample ID here
+OUTPUT_DIR=`pwd`/out                                # output path, e.g. /output
+THREADS=48                                          # threads, e.g. 48
+
+docker run -it \
+  -v ${INPUT_DIR}:${INPUT_DIR} \
+  -v ${OUTPUT_DIR}:${OUTPUT_DIR} \
+  hkubal/clusterv:latest \
+  python /opt/bin/ClusterV/cv.py ClusterV \
+  --ref_fn ${INPUT_REF} \
+  --bed_fn ${INPUT_BED} \
+  --bam_fn ${INPUT_BAM} \
+  --sample_id ${SAMPLE_ID} \
+  --out_dir ${OUTPUT_DIR} \
+  --threads ${THREADS}
+```
 
 ### Option 2. Build an anaconda virtual environment
 
@@ -44,9 +68,23 @@ conda activate clusterV
 
 pypy3 -m ensurepip
 pypy3 -m pip install --no-cache-dir intervaltree==3.0.2
-
 ```
 
+### Option 3. Docker Dockerfiles
+Building a docker image.
+
+```
+# clone ClusterV
+git clone https://github.com/hku-bal/ClusterV.git
+cd ClusterV
+
+# build a docker image named hkubal/ClusterV:latest
+# might require docker authentication to build docker image 
+docker build -f ./Dockerfile -t hkubal/clusterv:latest .
+
+# run clair3-trio docker image like 
+docker run -it hkubal/clusterv:latest python /opt/bin/ClusterV/cv.py --help
+```
 
 ## Usage
 
