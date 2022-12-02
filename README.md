@@ -162,3 +162,14 @@ python ${CV_DIR}/cv.py ClusterV \
 --sample_id ${SAMPLE_ID} \
 --out_dir ${OUTPUT_DIR}
 ```
+
+## Acknowledgement
+
+We thank the development of the following tools:
+
+- [HIVdb](https://hivdb.stanford.edu/)
+- [Flye](https://github.com/fenderglass/Flye)
+- [minimap2](https://github.com/lh3/minimap2)
+- [parallel](https://manpages.ubuntu.com/manpages/impish/man1/parallel.1.html)
+
+
