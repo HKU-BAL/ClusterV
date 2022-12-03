@@ -31,6 +31,7 @@ ClusterV is a standalone pipeline for accurately identifying HIV subtypes from O
   + [Understand output files](/docs/output.md)
 * [Quick demo](#quick-demo)
 * [Using localized HIVdb](#using-localized-hivdb)
+* [Acknowledgement](#acknowledgement)
 
 ## Installation
 
@@ -165,9 +166,12 @@ python ${CV_DIR}/cv.py ClusterV \
 
 ## Acknowledgement
 
-We thank the development of the following tools:
+ClusterV is designed and built by HKUCS BAL lab (HKUCS Bioinformatics Algorithm Lab).
+
+We apply and thank the following tools during the development of ClusterV:
 
 - [HIVdb](https://hivdb.stanford.edu/)
+- [IGV](https://software.broadinstitute.org/software/igv/)
 - [Flye](https://github.com/fenderglass/Flye)
 - [minimap2](https://github.com/lh3/minimap2)
 - [parallel](https://manpages.ubuntu.com/manpages/impish/man1/parallel.1.html)
