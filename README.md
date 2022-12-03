@@ -75,6 +75,9 @@ conda activate clusterV
 
 pypy3 -m ensurepip
 pypy3 -m pip install --no-cache-dir intervaltree==3.0.2
+
+# run ClusterV
+python cv.py ClusterV --help
 ```
 
 ### Option 3. Docker Dockerfiles
@@ -126,7 +129,7 @@ cd ClusterV
 mkdir -p testing
 (cd testing && wget http://www.bio8.cs.hku.hk/ClusterV/clusterv_testing.tar.gz && tar -xf clusterv_testing.tar.gz && rm clusterv_testing.tar.gz )
 
-# step2, run testing
+# step 2, run testing
 TESTING_DIR=`pwd`/testing
 INPUT_REF=${TESTING_DIR}/HIV_1.fasta
 INPUT_BED=${TESTING_DIR}/HIV_1_amplicon_region.bed
