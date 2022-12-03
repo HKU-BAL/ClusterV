@@ -152,10 +152,10 @@ python ${CV_DIR}/cv.py ClusterV \
 
 ClusterV uses online API to query drug resistance mutations in default. 
 
-If you wish to use the [localized HIVdb]((https://github.com/hivdb/sierra#start-sierra-with-docker) for HIV drug resistance mutation dection, please launch the HIVdb's Sierra web service locally, and use the following setting to run the ClusterV program.
+If you wish to use the [localized HIVdb](https://github.com/hivdb/sierra#start-sierra-with-docker) for HIV drug resistance mutation detection, please launch the HIVdb's [Sierra](https://github.com/hivdb/sierra#start-sierra-with-docker) web service locally, and use the following setting to run the ClusterV program.
 
 ```
-# Step 1, Start Sierra in local, as instructed in [this page](https://github.com/hivdb/sierra#start-sierra-with-docker).
+# Step 1, Start Sierra in local, as instructed in https://github.com/hivdb/sierra#start-sierra-with-docker.
 docker pull hivdb/sierra:latest
 docker run -it --publish=8111:8080 hivdb/sierra dev
 
