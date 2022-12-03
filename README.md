@@ -126,7 +126,6 @@ python ${CV_DIR}/cv.py ClusterV \
 Make sure you are in the clusterV environment by using `conda activate clusterV`, when using conda environment.
 
 ```
-
 # step 1, download testing files
 cd ClusterV
 mkdir -p testing
