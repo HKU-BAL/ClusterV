@@ -36,7 +36,7 @@ ClusterV is a standalone pipeline for accurately identifying HIV subtypes from O
 ## Installation
 
 ### Option 1. Docker pre-built image
-A pre-built docker image is available here. With it you can run ClusterV using a single command
+A pre-built docker image is available here. With it you can run ClusterV using a single command.
 
 Caution: Absolute path is needed for both `INPUT_DIR` and `OUTPUT_DIR`.
 
@@ -65,7 +65,7 @@ docker run -it \
 ### Option 2. Build an anaconda virtual environment
 
 ```
-# clone ClusterV code
+# get ClusterV code
 git clone https://github.com/HKU-BAL/ClusterV.git
 cd ClusterV
 
@@ -92,7 +92,7 @@ cd ClusterV
 # might require docker authentication to build docker image 
 docker build -f ./Dockerfile -t hkubal/clusterv:latest .
 
-# run clair3-trio docker image like 
+# run ClusterV docker image like 
 docker run -it hkubal/clusterv:latest python /opt/bin/ClusterV/cv.py --help
 ```
 
@@ -101,6 +101,8 @@ docker run -it hkubal/clusterv:latest python /opt/bin/ClusterV/cv.py --help
 For more parameters setting, please check the [parameters page](/docs/options.md).
 
 For understanding the output files, please check the [output page](/docs/output.md).
+
+Make sure you are in the clusterV environment by using `conda activate clusterV`, when using conda environment.
 
 ```bash
 CV_DIR="{ClusterV repo path}"
@@ -121,8 +123,9 @@ python ${CV_DIR}/cv.py ClusterV \
 
 ## Quick demo
 
+Make sure you are in the clusterV environment by using `conda activate clusterV`, when using conda environment.
+
 ```
-# make sure you are in the clusterV environment by using `conda activate clusterV`
 
 # step 1, download testing files
 cd ClusterV
