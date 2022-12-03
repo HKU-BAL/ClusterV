@@ -36,7 +36,7 @@ ClusterV is a standalone pipeline for accurately identifying HIV subtypes from O
 ## Installation
 
 ### Option 1. Docker pre-built image
-A pre-built docker image is available here. With it you can run ClusterV using a single command.
+A pre-built docker image is available [here](https://hub.docker.com/repository/docker/hkubal/clusterv). With it you can run ClusterV using a single command.
 
 Caution: Absolute path is needed for both `INPUT_DIR` and `OUTPUT_DIR`.
 
