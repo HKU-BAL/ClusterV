@@ -6,3 +6,5 @@ ori_testing/
 *.zip
 tmp_zip/
 build_docker
+*/__pycache__/
+__pycache__/
