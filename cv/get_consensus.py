@@ -13,6 +13,7 @@ from matplotlib import pyplot as plt
 import seaborn as sns
 import numpy as np
 import hashlib
+import matplotlib.patches as mpatches
 
 from cv.update_vcf_af import update_vcf
 from cv.parse_hivdb_json import parse_hivdb_json
@@ -42,7 +43,7 @@ def read_vcf(vcf_fn):
     # sort by chromosome and position
     vcf_list.sort(key=lambda x: (x[0], x[1]))
     print('read %s snp, %s indel from %s' % (v_cnt['snp'], v_cnt['indel'], vcf_fn))
-    return vcf_list, _header_l
+    return vcf_list, _header_l, [v_cnt['snp'], v_cnt['indel']]
 
 
 def flatten(x):
@@ -59,6 +60,172 @@ def _get_p(_t, _m, _G_map):
     _p = re.findall('(\d+)', _m)[0]
     return _G_map[str(_t)] + 3 * int(_p) - 1
 
+
+def _get_tar_level_info(_idx, _pct, _tar_level):
+        level_k_id = []
+        level_k_ptc = []
+        for _i in range(len(_idx)):
+            _level = int((len(_idx[_i]) - 1) / 2)
+            if _level >= _tar_level:
+                new_id = _idx[_i][:1+2*_tar_level]
+                if len(level_k_id) > 0 and new_id == level_k_id[-1]:
+                    level_k_ptc[-1] += _pct[_i]
+                else:
+                    level_k_id.append(new_id)
+                    level_k_ptc.append(_pct[_i])
+            else:
+                level_k_id.append('')
+                level_k_ptc.append(_pct[_i])
+        level_k_ptc = [int(i* 1000) for i in level_k_ptc]
+        return level_k_id, level_k_ptc
+    
+    
+# plot the subtype abundance pie plot, contains to plot the top_k subtypes
+def generate_clusters_rst_plot_partial(_candidates_list_in, _out_dir, _sample_id, _top_k=15):
+    _candidates_list = []
+    for _i in _candidates_list_in:
+        new_r = _i[:]
+        new_r[0] = new_r[0].split("_")[-1]
+        new_r[6] = int(new_r[6])
+        new_r[7] = float(new_r[7])
+        tmp_l = _i[-1].split(";")
+        new_r[8] = tuple([float(tmp_l[_j]) if _j == 3 else int(tmp_l[_j]) for _j in range(len(tmp_l))])
+        _candidates_list.append(new_r)
+    
+    _candidates_list.sort(key=lambda x: x[-4])
+    _idx = [i[-4] for i in _candidates_list]
+    _pct = [i[-2] for i in _candidates_list]
+    _idx_map = {i[-4]: i[0] for i in _candidates_list}
+    _acc_idx_map = len(_idx_map) + 1
+    cmap = plt.get_cmap('tab20c')
+    colors = cmap(np.arange(100))
+
+#     print(_candidates_list)
+    fig = plt.figure(figsize = (12, 6))
+    ax = fig.add_subplot(1,2,1)
+
+    _i = 1
+    _acc_n, _layer_n = 0, 0
+    _all_color, _all_label, _all_v = [], [], []
+    _lst_label = []
+    while _layer_n <= 3:
+        labels, v = _get_tar_level_info(_idx, _pct, _i)
+        new_label = ['%.0f%%' % (v[i]/10.) if labels[i] != '' else '' for i in range(len(labels))]
+        width = 0.3
+        wedge_properties = {"width":width, "edgecolor":"w",'linewidth': 2.1}
+        patches, texts  = ax.pie(v, labels=new_label, radius=0.3+width*_i, colors = colors[_acc_n:], rotatelabels=False, labeldistance=0.40+0.13*_i, wedgeprops=wedge_properties, startangle=90, counterclock=False)
+        [patches[i].set_alpha(0) for i in range(len(patches)) if labels[i] =='']
+        _i += 1
+        _v_c = sum([1 for i in labels if i != ''])
+        if _v_c == 0:
+            break
+        _all_color = _all_color + [colors[_acc_n+i] for i in range(len(labels)) if labels[i] != '']
+        _lst_label = [labels[i] for i in range(len(labels)) if labels[i] != '']
+        _all_label = _all_label + [labels[i] for i in range(len(labels)) if labels[i] != '']
+        _all_v = _all_v + [v[i] for i in range(len(labels)) if labels[i] != '']
+
+        _acc_n += _v_c
+        _layer_n += 1
+
+    def check_if_have_suf(x, all_x):
+        for row in all_x:
+            i = row[-4]
+            if len(i) > len(x) and x == i[:len(x)]:
+                return True
+        return False
+    _all_label_m_rev = {}
+    _all_label_m = []
+    for i in _all_label:
+        new_i_idx = 0
+        if i in _idx_map:
+            new_i_idx = _idx_map[i]
+        else:
+            new_i_idx = _acc_idx_map
+            _acc_idx_map += 1
+        _ori_l = str(i)
+        _new_l = str(new_i_idx)
+        if (i in _lst_label and check_if_have_suf(i, _candidates_list)):
+            _new_l = _new_l+'*'
+            _ori_l = _ori_l+'*'
+        _all_label_m_rev[_new_l] = _ori_l
+        _all_label_m.append(_new_l)
+
+    all_batch = [mpatches.Patch(color=_all_color[i], label='Cluster %s' % (_all_label_m[i])) for i in range(_acc_n)]
+    plt.legend(handles=all_batch, loc='best', bbox_to_anchor=(-0.2, 0.7, 0.02, 0.2), title='subtype')
+    plt.title('%s clusters compositions' % (_sample_id), y=1.20)
+
+
+    ax2 = fig.add_subplot(1,2,2)
+
+    # merge all plot infor for subgroup
+    p_all_color = [_all_color[i] for i in range(len(_all_label)) if not _all_label[i]+'_1' in _all_label]
+    p_all_label = ['%s' % (_all_label_m[i]) for i in range(len(_all_label)) if not _all_label[i]+'_1' in _all_label]
+    p_all_v = [_all_v[i]/1000. for i in range(len(_all_label)) if not _all_label[i]+'_1' in _all_label]
+
+    all_info = [list(i) for i in zip(p_all_color, p_all_label, p_all_v)]
+    all_info.sort(key=lambda x: -x[2])
+    all_info = all_info[:_top_k]
+    all_info.append([colors[-1], 'all', sum([i[-1] for i in all_info])])
+    ax2.bar([i[1] for i in all_info], [i[2] for i in all_info], tick_label = ['' for i in all_info], color=[i[0] for i in all_info])
+    ax2.set_xticks([])
+    ax2.set_ylim([0, 1.08])
+
+    _tar_snp_c = []
+    for _i in all_info:
+        tar_c = []
+        if _i[1] in _all_label_m_rev:
+            _tar_t = _all_label_m_rev[_i[1]]
+            tar_c = [_j[-1][1] for _j in _candidates_list if _j[-4] == _tar_t]
+        _tar_snp_c.append('%.0f' % (tar_c[0]) if len(tar_c) > 0 else '-')
+    _tar_indel_c = []
+    for _i in all_info:
+        tar_c = []
+        if _i[1] in _all_label_m_rev:
+            _tar_t = _all_label_m_rev[_i[1]]
+            tar_c = [_j[-1][2] for _j in _candidates_list if _j[-4] == _tar_t]
+        _tar_indel_c.append('%.0f' % (tar_c[0]) if len(tar_c) > 0 else '-')
+
+    _tar_n_c = []
+    for _i in all_info:
+        tar_c = []
+        if _i[1] in _all_label_m_rev:
+            _tar_t = _all_label_m_rev[_i[1]]
+            tar_c = [_j[-1][0] for _j in _candidates_list if _j[-4] == _tar_t]
+        _tar_n_c.append('%.0f' % (tar_c[0]) if len(tar_c) > 0 else '-')
+    _tar_af_g9 = []
+    for _i in all_info:
+        tar_c = []
+        if _i[1] in _all_label_m_rev:
+            _tar_t = _all_label_m_rev[_i[1]]
+            tar_c = ['%.2f' % (_j[-1][3]) for _j in _candidates_list if _j[-4] == _tar_t]
+        _tar_af_g9.append(tar_c[0] if len(tar_c) > 0 else '-')
+    data = [['%.1f' % (i[2]* 100.) for i in all_info],
+            _tar_n_c,
+            _tar_af_g9,
+            _tar_snp_c,
+            _tar_indel_c]
+    rows = ['Abundance (%)', 'Coverage', 'Median AF', '# of SNP', ' # of INDEL']
+
+    columns = [i[1] for i in all_info]
+    the_table = plt.table(cellText=data,
+                          rowLabels=rows,
+                          colLabels=columns,
+                          rowLoc='center',
+                          cellLoc='center')
+    the_table.auto_set_font_size(False)
+    the_table.set_fontsize(9)
+    the_table.scale(1.0, 1.5)
+    # Adjust layout to make room for the table:
+    plt.subplots_adjust(bottom=0.3)
+    for i, v in enumerate([i[2] for i in all_info]):
+        ax2.text(i - .38, v + 0.01, '%.1f%%' % (v*100), fontweight='bold', rotation=45)
+    plt.ylabel("subtype's abundance")
+    plt.title('clusters compositions', y=1.)
+    plt.savefig('%s/%s_clustering_rst.png' % (_out_dir, _sample_id), dpi=100, bbox_inches = "tight")
+    
+    
+    
+    
 def run_get_consensus(args):
     _all_out_dir = args.out_dir
     _info_tsv = args.tar_tsv
@@ -68,6 +235,7 @@ def run_get_consensus(args):
     _number_of_read_for_consense = args.number_of_read_for_consense
     _hivdb_url_option = '' if _hivdb_url == '' else "--url %s" % (_hivdb_url)
     _flye_genome_size = args.flye_genome_size
+    _flye_genome_size_olp = args.flye_genome_size_olp
     _threads = args.threads
     _py_s_d = os.path.dirname(os.path.abspath(__file__))
     print(_py_s_d)
@@ -83,15 +251,6 @@ def run_get_consensus(args):
 
     cmd = 'mkdir -p %s' % (_all_out_dir)
     _run_command(cmd)
-    cmd = 'cp %s %s' % (_info_tsv, _all_out_dir)
-    _run_command(cmd)
-
-    _png = '/'.join(_info_tsv.split('/')[:-1]) + '/*.png'
-    try:
-        cmd = 'cp %s %s' % (_png, _all_out_dir)
-        _run_command(cmd)
-    except:
-        pass
 
     all_c_l = []
     all_c_l.append(['id', 'gene', 'drugClass', 'drugName', 'drugScore', 'resistanceLevel', 'subtype_ori', 'subtype', 'abundance', 'is_in_consensus', 'VAF', 'mutationPos', 'mutation', 'mutationScore', 'mutationType', 'comments'])
@@ -110,20 +269,22 @@ def run_get_consensus(args):
             row = [i for i in line.strip().split() if len(i) > 0]
             _ori_vcf, _ori_bam, _ori_id, _p = row[1], row[2], row[5], row[-2]
             _s_idx = row[0]
-
-            #_id = row[4].split('.')[0]
             _id = row[4]
-            #_new_id = _ori_id
             _new_id = _id + '_' + _s_idx
+            
+#             # for testing dataset
+#             _id = row[4].split('.')[0]
+#             _s_id = '_'.join(_id.split('_')[1:])
+#             _new_id = _s_id + '_' + _s_idx
+            
             _n_row = row
             row[0] = _new_id
-            _info_tsv_l.append(_n_row)
-
+            print("checking subtype %s" % (_s_idx))
             _out_dir = "%s/%s" % (_all_out_dir, _new_id)
             cmd = 'mkdir -p %s' % (_out_dir)
-            _run_command(cmd)
+            _run_command(cmd, False)
 
-            # vcf from cliar
+            # vcf from Clair-Ensemble
             _new_vcf = "%s/%s.vcf.gz" % (_out_dir, _new_id)
             _new_bam = "%s/%s.bam" % (_out_dir, _new_id)
             _new_bam_read = "%s/%s_ori_r.fasta" % (_out_dir, _new_id)
@@ -149,7 +310,7 @@ def run_get_consensus(args):
             _run_command(cmd, False)
 
             # run flye
-            cmd = 'flye --nano-raw %s --threads %s --out-dir %s -m 1000 -g %s >/dev/null 2>&1' % (_new_bam_read, _threads, _new_cs_dir, _flye_genome_size)
+            cmd = 'flye --nano-raw %s --threads %s --out-dir %s -m %s -g %s >/dev/null 2>&1' % (_new_bam_read, _threads, _new_cs_dir, _flye_genome_size_olp, _flye_genome_size)
             _run_command(cmd)
 
             # run alignmnet for visulization
@@ -163,8 +324,28 @@ def run_get_consensus(args):
             # get consensus varaints and AF
             update_vcf(_new_cs_vcf_tmp, _new_bam, _bed, _new_cs_vcf, max_dp_in_check=10000, is_log=False)
 
-            _cs_vcf_lst, _ = read_vcf(_new_cs_vcf)
-            print(_cs_vcf_lst[0])
+            _cs_vcf_lst, _, v_cnt = read_vcf(_new_cs_vcf)
+            
+            _snp_c, _indel_c = v_cnt[0], v_cnt[1]
+            all_af = np.array([i[-2] for i in _cs_vcf_lst])
+            
+#             print([i[:-1] for i in _cs_vcf_lst if i[-2] < 0.3])
+            af_bins = np.asarray([0, .3, .7, 1.])
+            counts, _ = np.histogram(all_af, af_bins)
+            _median_af, _af_1, _af_2, _af_3 = 0, 0, 0, 0
+            if len(all_af) > 0:
+                _median_af, _af_1, _af_2, _af_3 = np.median(all_af), counts[0], counts[1], counts[2]
+            print("read snp, indel, median af, #_af_0_0.3, #_af_0.3_0.7, #_af_0.7_1.0")
+            print("%s, %s, %.2f, %d, %d, %d" % ( _snp_c, _indel_c, _median_af, _af_1, _af_2, _af_3))
+#             print(row)
+            
+            ori_cnt = row[-1].split(';')[0]
+            row[-1] = "%s;%s;%s;%.5f;%d;%d;%d" % (ori_cnt, _snp_c, _indel_c, _median_af, _af_1, _af_2, _af_3)
+#             print(row)
+            
+            _info_tsv_l.append(row)
+            
+#             print(_cs_vcf_lst[0])
             # flatten varaints list
             _tar_v_list = ','.join(["%s:%s,%s" % (_tmp_v[1], _tmp_v[2], _tmp_v[3]) for _tmp_v in _cs_vcf_lst])
             _hash_m = hashlib.sha256(_tar_v_list.encode('utf-8')).hexdigest()
@@ -279,6 +460,12 @@ def run_get_consensus(args):
     _new_info = _u_new_info
     _u_all_c_l  = _update_p(_id_v_lst, tar_l = all_c_l,  _id_idx = 7, _p_idx = 8)
     all_c_l = _u_all_c_l
+    
+    _sample_id = _id
+
+    if len(_info_tsv_l) > 2:
+        generate_clusters_rst_plot_partial(_info_tsv_l[1:], _all_out_dir, _sample_id)
+
 
     # subtype's info.
     print("=======\nFound %s subtype(s)" % (len(_info_tsv_l) - 1))
@@ -309,7 +496,6 @@ def run_get_consensus(args):
         print('no drug resistance found')
         return 0
 #     return
-    _sample_id = _id
     _tar_f = "%s/all_report.tsv" % (_all_out_dir)
 
     _all_df = pd.read_csv(_tar_f, sep='\t')
@@ -458,6 +644,9 @@ def main():
 
     parser.add_argument('--flye_genome_size', type=str, default="5k",
                         help="[EXPERIMEANTAL], flye --genome-size for generating consensus, we recommand using 5k for HIV genome")
+    
+    parser.add_argument('--flye_genome_size_olp', type=str, default="1000",
+                        help="[EXPERIMEANTAL], flye -m for generating consensus, we recommand using 1000 for HIV genome")
 
     args = parser.parse_args()
 

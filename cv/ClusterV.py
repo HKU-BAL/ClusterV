@@ -68,6 +68,9 @@ def main():
 
     parser.add_argument('--flye_genome_size', type=str, default="5k",
                         help="[EXPERIMEANTAL], flye --genome-size for generating consensus, we recommand using 5k for HIV genome")
+    
+    parser.add_argument('--flye_genome_size_olp', type=str, default="1000",
+                        help="[EXPERIMEANTAL], flye -m for generating consensus, we recommand using 1000 for HIV genome")
 
     args = parser.parse_args()
     if len(sys.argv[1:]) == 0:
@@ -86,7 +89,7 @@ def main():
     args.clair_ensemble_threads = int(args.threads / args.subtype_parallel)
 
     # run initial run
-    print("-----------------------------\nbegin initial run\n")
+    print("-----------------------------\n[ ** STEP 1 ** ] begin initial run\n")
     initial_run(args)
 
     # run clusterV
@@ -94,11 +97,11 @@ def main():
     args.bam_fn = "%s/%s_f.bam" % (_out_dir, _sample_id)
     args.out_dir = "%s/clustering" % (_out_dir)
     print("-----------------------------")
-    print("begin clusterV run, with [%s threads, parallel %s subtypes with %s clair-ensemble threads]\n" % (args.threads, args.subtype_parallel, args.clair_ensemble_threads))
+    print("[ ** STEP 2 ** ] begin clusterV run, with [%s threads, parallel %s subtypes with %s clair-ensemble threads]\n" % (args.threads, args.subtype_parallel, args.clair_ensemble_threads))
     CV_run(args)
 
     # get consensus and get HIVDB report
-    print("-----------------------------\nget consensus and HIVDB report\n")
+    print("-----------------------------\n[ ** STEP 3 ** ]get consensus and HIVDB report\n")
     args.out_dir = "%s/consensus" % (_out_dir)
     args.tar_tsv = "%s/clustering/all_clusters_info.tsv" % (_out_dir)
     run_get_consensus(args)

@@ -6,7 +6,6 @@ from argparse import ArgumentParser
 from shared.utils import subprocess_popen, vcf_candidates_from, _run_command
 from shared.interval_tree import bed_tree_from, is_region_in
 from matplotlib import pyplot as plt
-import matplotlib.patches as mpatches
 import numpy as np
 import pandas as pd
 import pysam
@@ -418,252 +417,8 @@ def get_clusers_from_peaks(all_peak_af, vcf_d, _bam,  MAX_SNP_IN_CLUSTER = 15, M
     return all_rst, max_combined_score_i, _coverage
 
 
-def _get_tar_level_info(_idx, _pct, _tar_level):
-        level_k_id = []
-        level_k_ptc = []
-        for _i in range(len(_idx)):
-            _level = int((len(_idx[_i]) - 1) / 2)
-            if _level >= _tar_level:
-                new_id = _idx[_i][:1+2*_tar_level]
-                if len(level_k_id) > 0 and new_id == level_k_id[-1]:
-                    level_k_ptc[-1] += _pct[_i]
-                else:
-                    level_k_id.append(new_id)
-                    level_k_ptc.append(_pct[_i])
-            else:
-                level_k_id.append('')
-                level_k_ptc.append(_pct[_i])
-        level_k_ptc = [int(i* 1000) for i in level_k_ptc]
-        return level_k_id, level_k_ptc
-
-def generate_clusters_rst_plot(_candidates_list, _out_dir, _sample_id, _top_k):
-    _candidates_list.sort(key=lambda x: x[-4])
-    _idx = [i[-4] for i in _candidates_list]
-    _pct = [i[-2] for i in _candidates_list]
-    _idx_map = {i[-4]: i[0] for i in _candidates_list}
-
-    cmap = plt.get_cmap('tab20c')
-    colors = cmap(np.arange(50)*2)
-
-    fig = plt.figure(figsize = (12, 6))
-    ax = fig.add_subplot(1,2,1)
-
-    _i = 1
-    _acc_n = 0
-    _all_color, _all_label, _all_v = [], [], []
-    while True:
-        labels, v = _get_tar_level_info(_idx, _pct, _i)
-        new_label = ['%.0f%%' % (v[i]/10.) if labels[i] != '' else '' for i in range(len(labels))]
-
-        width = 0.4
-        wedge_properties = {"width":width, "edgecolor":"w",'linewidth': 2}
-        patches, texts  = ax.pie(v, labels=new_label, radius=0.3+width*_i, colors = colors[_acc_n:], rotatelabels=False, labeldistance=0.36+0.14*_i, wedgeprops=wedge_properties, startangle=90, counterclock=False)
-        [patches[i].set_alpha(0) for i in range(len(patches)) if labels[i] =='']
-        _i += 1
-        _v_c = sum([1 for i in labels if i != ''])
-        if _v_c == 0:
-            break
-        _all_color = _all_color + [colors[_acc_n+i] for i in range(len(labels)) if labels[i] != '']
-        _all_label = _all_label + [labels[i] for i in range(len(labels)) if labels[i] != '']
-        _all_v = _all_v + [v[i] for i in range(len(labels)) if labels[i] != '']
-        _acc_n += _v_c
-
-    all_batch = [mpatches.Patch(color=_all_color[i], label='Cluster %s' % (_all_label[i])) for i in range(_acc_n)]
-    plt.legend(handles=all_batch, loc='best', bbox_to_anchor=(-0.2, 0.6, 0.04, 0.2))
-    plt.title('%s top clusters compositions' % (_sample_id), y=1.26)
-    ax2 = fig.add_subplot(1,2,2)
-
-    # merge all plot infor for subgroup
-    p_all_color = [_all_color[i] for i in range(len(_all_label)) if not _all_label[i]+'_1' in _all_label]
-    p_all_label = ['%s' % (_all_label[i]) for i in range(len(_all_label)) if not _all_label[i]+'_1' in _all_label]
-    p_all_v = [_all_v[i]/1000. for i in range(len(_all_label)) if not _all_label[i]+'_1' in _all_label]
-
-    all_info = [list(i) for i in zip(p_all_color, p_all_label, p_all_v)]
-    all_info.sort(key=lambda x: -x[2])
-    all_info = all_info[:_top_k]
-    all_info.append([colors[-1], 'top clusters', sum([i[-1] for i in all_info])])
-    # all_info = all_info[::-1]
-    print(all_info)
-    ax2.bar([i[1] for i in all_info], [i[2] for i in all_info], tick_label = ['' for i in all_info], color=[i[0] for i in all_info])
-    ax2.set_xticks([])
-    ax2.set_ylim([0, 1.08])
-
-    _tar_snp_c = []
-    for _i in all_info:
-        tar_c = [_j[-1][1] for _j in _candidates_list if _j[-4] == _i[1]]
-        _tar_snp_c.append(tar_c[0] if len(tar_c) > 0 else '-')
-    _tar_indel_c = []
-    for _i in all_info:
-        tar_c = [_j[-1][2] for _j in _candidates_list if _j[-4] == _i[1]]
-        _tar_indel_c.append(tar_c[0] if len(tar_c) > 0 else '-')
-
-    _tar_n_c = []
-    for _i in all_info:
-        tar_c = [_j[-1][0] for _j in _candidates_list if _j[-4] == _i[1]]
-        _tar_n_c.append(tar_c[0] if len(tar_c) > 0 else '-')
-
-    _tar_af_g9 = []
-    for _i in all_info:
-        tar_c = ['%.2f' % (_j[-1][3]) for _j in _candidates_list if _j[-4] == _i[1]]
-        _tar_af_g9.append(tar_c[0] if len(tar_c) > 0 else '-')
-
-    data = [['%.1f%%' % (i[2]* 100.) for i in all_info],
-            _tar_n_c,
-            _tar_af_g9,
-            _tar_snp_c,
-            _tar_indel_c]
-    rows = ['Proportions', 'Coverage', 'Median AF', '# of SNP', ' # of INDEL']
-    columns = [i[1] for i in all_info]
-    the_table = plt.table(cellText=data,
-                          rowLabels=rows,
-                          colLabels=columns,
-                          rowLoc='center',
-                          cellLoc='center')
-    the_table.auto_set_font_size(False)
-    the_table.set_fontsize(9)
-    the_table.scale(1.0, 1.5)
-    # Adjust layout to make room for the table:
-    plt.subplots_adjust(bottom=0.3)
-    for i, v in enumerate([i[2] for i in all_info]):
-        ax2.text(i - .35, v + 0.01, '%.1f%%' % (v*100), fontweight='bold')
-
-    plt.ylabel('proportions')
-    plt.title('Final top clusters compositions', y=1.)
-    plt.savefig('%s/%s_clustering_rst.png' % (_out_dir, _sample_id), dpi=100, bbox_inches = "tight")
 
 
-
-def generate_clusters_rst_plot_partial(_candidates_list, _out_dir, _sample_id, _top_k):
-    _candidates_list.sort(key=lambda x: x[-4])
-    _idx = [i[-4] for i in _candidates_list]
-    _pct = [i[-2] for i in _candidates_list]
-    _idx_map = {i[-4]: i[0] for i in _candidates_list}
-    _acc_idx_map = len(_idx_map) + 1
-    cmap = plt.get_cmap('tab20c')
-    colors = cmap(np.arange(100))
-
-    fig = plt.figure(figsize = (12, 6))
-    ax = fig.add_subplot(1,2,1)
-
-
-    _i = 1
-    _acc_n, _layer_n = 0, 0
-    _all_color, _all_label, _all_v = [], [], []
-    _lst_label = []
-    while _layer_n <= 3:
-        labels, v = _get_tar_level_info(_idx, _pct, _i)
-        new_label = ['%.0f%%' % (v[i]/10.) if labels[i] != '' else '' for i in range(len(labels))]
-        width = 0.3
-        wedge_properties = {"width":width, "edgecolor":"w",'linewidth': 2.1}
-        patches, texts  = ax.pie(v, labels=new_label, radius=0.3+width*_i, colors = colors[_acc_n:], rotatelabels=False, labeldistance=0.40+0.13*_i, wedgeprops=wedge_properties, startangle=90, counterclock=False)
-        [patches[i].set_alpha(0) for i in range(len(patches)) if labels[i] =='']
-        _i += 1
-        _v_c = sum([1 for i in labels if i != ''])
-        if _v_c == 0:
-            break
-        _all_color = _all_color + [colors[_acc_n+i] for i in range(len(labels)) if labels[i] != '']
-        _lst_label = [labels[i] for i in range(len(labels)) if labels[i] != '']
-        _all_label = _all_label + [labels[i] for i in range(len(labels)) if labels[i] != '']
-        _all_v = _all_v + [v[i] for i in range(len(labels)) if labels[i] != '']
-
-        _acc_n += _v_c
-        _layer_n += 1
-
-    def check_if_have_suf(x, all_x):
-        for row in all_x:
-            i = row[-4]
-            if len(i) > len(x) and x == i[:len(x)]:
-                return True
-        return False
-    _all_label_m_rev = {}
-    _all_label_m = []
-    for i in _all_label:
-        new_i_idx = 0
-        if i in _idx_map:
-            new_i_idx = _idx_map[i]
-        else:
-            new_i_idx = _acc_idx_map
-            _acc_idx_map += 1
-        _ori_l = str(i)
-        _new_l = str(new_i_idx)
-        if (i in _lst_label and check_if_have_suf(i, _candidates_list)):
-            _new_l = _new_l+'*'
-            _ori_l = _ori_l+'*'
-        _all_label_m_rev[_new_l] = _ori_l
-        _all_label_m.append(_new_l)
-
-    all_batch = [mpatches.Patch(color=_all_color[i], label='Cluster %s' % (_all_label_m[i])) for i in range(_acc_n)]
-    plt.legend(handles=all_batch, loc='best', bbox_to_anchor=(-0.3, 0.7, 0.02, 0.2), title='subtype')
-    plt.title('%s clusters compositions' % (_sample_id), y=1.26)
-
-
-    ax2 = fig.add_subplot(1,2,2)
-
-    # merge all plot infor for subgroup
-    p_all_color = [_all_color[i] for i in range(len(_all_label)) if not _all_label[i]+'_1' in _all_label]
-    p_all_label = ['%s' % (_all_label_m[i]) for i in range(len(_all_label)) if not _all_label[i]+'_1' in _all_label]
-    p_all_v = [_all_v[i]/1000. for i in range(len(_all_label)) if not _all_label[i]+'_1' in _all_label]
-
-    all_info = [list(i) for i in zip(p_all_color, p_all_label, p_all_v)]
-    all_info.sort(key=lambda x: -x[2])
-    all_info = all_info[:_top_k]
-    all_info.append([colors[-1], 'all', sum([i[-1] for i in all_info])])
-    ax2.bar([i[1] for i in all_info], [i[2] for i in all_info], tick_label = ['' for i in all_info], color=[i[0] for i in all_info])
-    ax2.set_xticks([])
-    ax2.set_ylim([0, 1.08])
-
-    _tar_snp_c = []
-    for _i in all_info:
-        tar_c = []
-        if _i[1] in _all_label_m_rev:
-            _tar_t = _all_label_m_rev[_i[1]]
-            tar_c = [_j[-1][1] for _j in _candidates_list if _j[-4] == _tar_t]
-        _tar_snp_c.append('%.0f' % (tar_c[0]) if len(tar_c) > 0 else '-')
-    _tar_indel_c = []
-    for _i in all_info:
-        tar_c = []
-        if _i[1] in _all_label_m_rev:
-            _tar_t = _all_label_m_rev[_i[1]]
-            tar_c = [_j[-1][2] for _j in _candidates_list if _j[-4] == _tar_t]
-        _tar_indel_c.append('%.0f' % (tar_c[0]) if len(tar_c) > 0 else '-')
-
-    _tar_n_c = []
-    for _i in all_info:
-        tar_c = []
-        if _i[1] in _all_label_m_rev:
-            _tar_t = _all_label_m_rev[_i[1]]
-            tar_c = [_j[-1][0] for _j in _candidates_list if _j[-4] == _tar_t]
-        _tar_n_c.append('%.0f' % (tar_c[0]) if len(tar_c) > 0 else '-')
-    _tar_af_g9 = []
-    for _i in all_info:
-        tar_c = []
-        if _i[1] in _all_label_m_rev:
-            _tar_t = _all_label_m_rev[_i[1]]
-            tar_c = ['%.2f' % (_j[-1][3]) for _j in _candidates_list if _j[-4] == _tar_t]
-        _tar_af_g9.append(tar_c[0] if len(tar_c) > 0 else '-')
-    data = [['%.1f' % (i[2]* 100.) for i in all_info],
-            _tar_n_c,
-            _tar_af_g9,
-            _tar_snp_c,
-            _tar_indel_c]
-    rows = ['Abundance (%)', 'Coverage', 'Median AF', '# of SNP', ' # of INDEL']
-
-    columns = [i[1] for i in all_info]
-    the_table = plt.table(cellText=data,
-                          rowLabels=rows,
-                          colLabels=columns,
-                          rowLoc='center',
-                          cellLoc='center')
-    the_table.auto_set_font_size(False)
-    the_table.set_fontsize(9)
-    the_table.scale(1.0, 1.5)
-    # Adjust layout to make room for the table:
-    plt.subplots_adjust(bottom=0.3)
-    for i, v in enumerate([i[2] for i in all_info]):
-        ax2.text(i - .38, v + 0.01, '%.1f%%' % (v*100), fontweight='bold', rotation=45)
-    plt.ylabel("subtype's abundance")
-    plt.title('clusters compositions', y=1.)
-    plt.savefig('%s/%s_clustering_rst.png' % (_out_dir, _sample_id), dpi=100, bbox_inches = "tight")
 
 # run cluster and return node and their percentage
 def run_clustering(_candidate_item, tree, is_tree_empty, _ref, _bed, _n_max_candidates=15, _min_af=0.05, _n_max_coverage=10000, _n_min_supports=50, _cn_threads=16, _subtype_parallel=3):
@@ -891,9 +646,6 @@ def CV_run(args):
 
     print(_candidates_list)
 
-    if len(_candidates_list) > 1:
-        generate_clusters_rst_plot_partial(_candidates_list, _out_dir, _sample_id, _top_k)
-
     return _candidates_list
 
 
@@ -912,7 +664,7 @@ def main():
     parser.add_argument('--bed_fn', type=str, default="input.bed",
                         help="input target regions bed file, required")
 
-    parser.add_argument('--ref_fn', type=str, default="ref.bed",
+    parser.add_argument('--ref_fn', type=str, default="ref.fasta",
                         help="input reference fasta, required")
 
     parser.add_argument('--sample_id', type=str, default="sample_id",
@@ -932,9 +684,6 @@ def main():
 
     parser.add_argument('--n_min_supports', type=int, default=50,
                         help="minimum read support for creating a subtype, optional")
-
-    parser.add_argument('--clair_ensemble_threads', type=int, default=16,
-                        help="Clair-Ensemble threads, we recommend using 16, [16] optional")
 
     parser.add_argument('--clair_ensemble_threads', type=int, default=16,
                         help="Clair-Ensemble threads, we recommend using 16, [16] optional")
