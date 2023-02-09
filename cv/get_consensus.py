@@ -151,7 +151,7 @@ def generate_clusters_rst_plot_partial(_candidates_list_in, _out_dir, _sample_id
         _all_label_m.append(_new_l)
 
     all_batch = [mpatches.Patch(color=_all_color[i], label='Cluster %s' % (_all_label_m[i])) for i in range(_acc_n)]
-    plt.legend(handles=all_batch, loc='best', bbox_to_anchor=(-0.2, 0.7, 0.02, 0.2), title='subtype')
+    plt.legend(handles=all_batch, loc='best', bbox_to_anchor=(-0.2, 0.7, 0.02, 0.2), title='quasispecies')
     plt.title('%s clusters compositions' % (_sample_id), y=1.20)
 
 
@@ -219,7 +219,7 @@ def generate_clusters_rst_plot_partial(_candidates_list_in, _out_dir, _sample_id
     plt.subplots_adjust(bottom=0.3)
     for i, v in enumerate([i[2] for i in all_info]):
         ax2.text(i - .38, v + 0.01, '%.1f%%' % (v*100), fontweight='bold', rotation=45)
-    plt.ylabel("subtype's abundance")
+    plt.ylabel("quasispecies's abundance")
     plt.title('clusters compositions', y=1.)
     plt.savefig('%s/%s_clustering_rst.png' % (_out_dir, _sample_id), dpi=100, bbox_inches = "tight")
     
@@ -271,11 +271,10 @@ def run_get_consensus(args):
             _s_idx = row[0]
             _id = row[4]
             _new_id = _id + '_' + _s_idx
-            
-#             # for testing dataset
-#             _id = row[4].split('.')[0]
-#             _s_id = '_'.join(_id.split('_')[1:])
-#             _new_id = _s_id + '_' + _s_idx
+            # # for testing dataset
+            #_id = row[4].split('.')[0]
+            #_s_id = '_'.join(_id.split('_')[1:])
+            #_new_id = _s_id + '_' + _s_idx
             
             _n_row = row
             row[0] = _new_id
@@ -522,7 +521,7 @@ def run_get_consensus(args):
         tar_dr = _tmp_df.groupby(['gene', 'mutation', 'subtype'])['abundance'].sum().unstack(["subtype"]).fillna(0)
         tar_dr.plot.bar(stacked=True, ax = ax2)
 
-        ax2.set_ylabel("subtype's abudance")
+        ax2.set_ylabel("quasispecies's abudance")
         ax2.set_ylim([0, 1.05])
         ax2.xaxis.grid(False, which='both')
 
@@ -541,7 +540,7 @@ def run_get_consensus(args):
         ax1.margins(.05)
         for label in ax1.get_xticklabels():
             label.set_rotation(90)
-        ax1.legend(loc='center left', bbox_to_anchor=(1.02, 0.6), title="subtype",fontsize='x-small', fancybox=True)
+        ax1.legend(loc='center left', bbox_to_anchor=(1.02, 0.6), title="quasispecies",fontsize='x-small', fancybox=True)
         ax1.xaxis.grid(False, which='both')
 
     #     plt.tight_layout()
@@ -585,6 +584,7 @@ def run_get_consensus(args):
         );
         ax1.set_title('')
         ax1.tick_params(left=False)
+        ax1.set_ylabel("quasispecies")
 
         for _, spine in ax1.spines.items():
             spine.set_visible(True)
@@ -610,7 +610,7 @@ def run_get_consensus(args):
             spine.set_visible(True)
         ax1.annotate("*Resistance level: HL: High-Level Resistance, IL: Intermediate Resistance,\n                              LL: Low-Level Resistance, PLL: Potential Low-Level Resistance", 
                     size=11, xy = (-0.1, -2.5 / (_d * 0.9 + 0.5)), xycoords='axes fraction')
-        ax2.set_title('Heatmap of gene and drug resistance(s) in subtypes                            ', pad=20)
+        ax2.set_title('Heatmap of gene and drug resistance(s) in quasispecies                            ', pad=20)
         # ax2.set_title('')
         # fig.suptitle('Heatmap of gene and drug resistance(s) in subtypes')
         plt.savefig('%s/all_mutation_and_drug_ressitant_heatmap.png' % (_all_out_dir), dpi=100, bbox_inches = "tight")

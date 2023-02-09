@@ -8,3 +8,4 @@ tmp_zip/
 build_docker
 */__pycache__/
 __pycache__/
+*.swo
