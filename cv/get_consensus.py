@@ -271,6 +271,7 @@ def run_get_consensus(args):
             _s_idx = row[0]
             _id = row[4]
             _new_id = _id + '_' + _s_idx
+
             # # for testing dataset
             #_id = row[4].split('.')[0]
             #_s_id = '_'.join(_id.split('_')[1:])
