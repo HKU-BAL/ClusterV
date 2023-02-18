@@ -1,4 +1,4 @@
-# ClusterV: finding HIV quasispecies from ONT sequencing data
+# ClusterV: finding HIV quasispecies and drug resistance from ONT sequencing data
 
 [![License](https://img.shields.io/badge/License-BSD%203--Clause-blue.svg)](https://opensource.org/licenses/BSD-3-Clause) 
 [![docker](https://img.shields.io/badge/build-docker-brightgreen)](https://www.docker.com/)
@@ -13,7 +13,7 @@ Email: rbluo@cs.hku.hk, jhsu@cs.hku.hk
 ----
 
 ## Introduction
-ClusterV is a standalone pipeline for accurately identifying HIV quasispecies from ONT sequencing data.  ClusterV takes the alignment BAM file, reference FastA file and target region BED file (defining the target regions) of the HIV data as input, and outputs all found quasispecies with their abundance, alignment, variants (SNPs and INDELs), and the drug resistance reports. ClusterV consists of three major modules, 1) filtering and initialing, where we run quality control at alignment files; 2) quasispecies finding, we iteratively run variant calling - hierarchical clustering to find all variants and quasispecies; 3) HIV mutation finding, where we generate consensus from each quasispecies and get all HIV drug resistance mutations reports. 
+ClusterV is a standalone pipeline for accurately identifying HIV quasispecies from ONT sequencing data.  ClusterV takes the alignment BAM file, reference FastA file and target region BED file (defining the target regions) of the HIV data as input, and outputs all found quasispecies with their abundance, alignment, variants (SNPs and INDELs), and the drug resistance reports. ClusterV consists of three major modules, 1) filtering and initialing, where we run quality control at alignment files; 2) quasispecies finding, we iteratively run variant calling - hierarchical clustering to find all variants and quasispecies; 3) HIV mutation finding, where we generate consensus from each quasispecies and get all HIV drug resistance / mutations reports. 
 
 <img src="./docs/github_wf.png" width = "800" alt="ClusterV wf">
 
