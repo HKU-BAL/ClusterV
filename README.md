@@ -32,6 +32,7 @@ ClusterV is a standalone pipeline for accurately identifying HIV quasispecies fr
 * [Quick demo](#quick-demo)
 * [Using localized HIVdb](#using-localized-hivdb)
 * [Acknowledgement](#acknowledgement)
+* [Publication](#publication)
 
 ## Installation
 
@@ -181,4 +182,6 @@ We apply and thank the following tools during the development of ClusterV:
 - [minimap2](https://github.com/lh3/minimap2)
 - [parallel](https://manpages.ubuntu.com/manpages/impish/man1/parallel.1.html)
 
+## Publication
 
+- Ng, Timothy Ting-Leung, Junhao Su, Hiu-Yin Lao, Wui-Wang Lui, Chloe Toi-Mei Chan, Amy Wing-Sze Leung, Stephanie Hoi-Ching Jim et al. "Long-Read Sequencing with Hierarchical Clustering for Antiretroviral Resistance Profiling of Mixed Human Immunodeficiency Virus Quasispecies." Clinical Chemistry 69, no. 10 (2023): 1174-1185.
