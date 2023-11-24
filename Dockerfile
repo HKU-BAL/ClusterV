@@ -25,8 +25,8 @@ RUN wget --quiet https://repo.anaconda.com/miniconda/Miniconda3-latest-Linux-x86
     conda config --add channels defaults && \
     conda config --add channels bioconda && \
     conda config --add channels conda-forge && \
-    wget http://www.bio8.cs.hku.hk/ClusterV/ClusterV-1.2.zip && \
-    unzip ClusterV-1.2.zip && mv ClusterV-1.1 ClusterV && \
+    wget https://github.com/HKU-BAL/ClusterV/archive/refs/tags/v1.2.zip && \
+    unzip v1.2.zip && mv ClusterV-1.2 ClusterV && \
     cd ClusterV && \
     conda env create -f clusterV.yml
 
