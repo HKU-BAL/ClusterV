@@ -22,6 +22,7 @@ ClusterV is a standalone pipeline for accurately identifying HIV quasispecies fr
 ## Contents
 
 * [Introduction](#introduction)
+* [Latest Update](#latest-update)
 * [Installation](#installation)
   + [Option 1. Docker pre-built image](#option-1-docker-pre-built-image)
   + [Option 2. Build an anaconda virtual environment](#option-2-build-an-anaconda-virtual-environment)
@@ -33,6 +34,13 @@ ClusterV is a standalone pipeline for accurately identifying HIV quasispecies fr
 * [Using localized HIVdb](#using-localized-hivdb)
 * [Acknowledgement](#acknowledgement)
 * [Publication](#publication)
+
+
+## Latest Update
+
+*v1.2 (Nov 24, 2023)*: Update Flye [option](https://github.com/fenderglass/Flye/blob/flye/docs/USAGE.md) to support ONT Guppy5+ SUP or Q20 data.
+
+*v1.1 (Dec 1, 2022)*: Initial release.
 
 ## Installation
 
@@ -96,6 +104,8 @@ docker build -f ./Dockerfile -t hkubal/clusterv:latest .
 # run ClusterV docker image like 
 docker run -it hkubal/clusterv:latest python /opt/bin/ClusterV/cv.py --help
 ```
+
+
 
 ## Usage
 

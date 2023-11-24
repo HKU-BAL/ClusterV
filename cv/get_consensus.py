@@ -236,6 +236,7 @@ def run_get_consensus(args):
     _hivdb_url_option = '' if _hivdb_url == '' else "--url %s" % (_hivdb_url)
     _flye_genome_size = args.flye_genome_size
     _flye_genome_size_olp = args.flye_genome_size_olp
+    _flye_nano_type = args.flye_nano_type
     _threads = args.threads
     _py_s_d = os.path.dirname(os.path.abspath(__file__))
     print(_py_s_d)
@@ -310,7 +311,9 @@ def run_get_consensus(args):
             _run_command(cmd, False)
 
             # run flye
-            cmd = 'flye --nano-raw %s --threads %s --out-dir %s -m %s -g %s >/dev/null 2>&1' % (_new_bam_read, _threads, _new_cs_dir, _flye_genome_size_olp, _flye_genome_size)
+            #cmd = 'flye --asm-coverage 50 --nano-raw %s --threads %s --out-dir %s -m %s -g %s >/dev/null 2>&1' % (_new_bam_read, _threads, _new_cs_dir, _flye_genome_size_olp, _flye_genome_size)
+            #cmd = 'flye --nano-hq %s --threads %s --out-dir %s -m %s -g %s >/dev/null 2>&1' % (_new_bam_read, _threads, _new_cs_dir, _flye_genome_size_olp, _flye_genome_size)
+            cmd = 'flye --%s %s --threads %s --out-dir %s -m %s -g %s >/dev/null 2>&1' % (_flye_nano_type, _new_bam_read, _threads, _new_cs_dir, _flye_genome_size_olp, _flye_genome_size)
             _run_command(cmd)
 
             # run alignmnet for visulization
@@ -649,6 +652,8 @@ def main():
     parser.add_argument('--flye_genome_size_olp', type=str, default="1000",
                         help="[EXPERIMEANTAL], flye -m for generating consensus, we recommand using 1000 for HIV genome")
 
+    parser.add_argument('--flye_nano_type', type=str, default="nano-hq",
+                        help="[EXPERIMEANTAL], flye option for different ont type, default --nano-hq, check https://github.com/fenderglass/Flye/blob/flye/docs/USAGE.md")
     args = parser.parse_args()
 
     if len(sys.argv[1:]) == 0:

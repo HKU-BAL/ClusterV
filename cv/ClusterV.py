@@ -72,6 +72,9 @@ def main():
     parser.add_argument('--flye_genome_size_olp', type=str, default="1000",
                         help="[EXPERIMEANTAL], flye -m for generating consensus, we recommand using 1000 for HIV genome")
 
+    parser.add_argument('--flye_nano_type', type=str, default="nano-hq",
+            help="[EXPERIMEANTAL], flye option for different ont type, default --nano-hq, check https://github.com/fenderglass/Flye/blob/flye/docs/USAGE.md")
+
     args = parser.parse_args()
     if len(sys.argv[1:]) == 0:
         parser.print_help()

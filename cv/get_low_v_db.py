@@ -21,7 +21,7 @@ def read_ref(ref_fn):
             if line[0] == '>':
                 if _ct != '':
                     ref_d[_ct] = _s
-                _ct = line[1:]
+                _ct = line[1:].split(' ')[0]
                 _s = ''
             else:
                 _s += line

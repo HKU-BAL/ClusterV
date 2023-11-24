@@ -9,3 +9,4 @@ build_docker
 */__pycache__/
 __pycache__/
 *.swo
+**/*.pyc
