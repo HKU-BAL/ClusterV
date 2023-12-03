@@ -12,7 +12,7 @@ Required parameters:
 
 Other parameters:
 
-[EXPERIMENTAL] are for testing and advance usage.
+[EXPERIMENTAL] are for testing and advanced usage.
 
 | Type                               | Parameters                    | Type  | Default | Description                                                                                                                                                                                                              |
 |------------------------------------|-------------------------------|-------|---------|--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
@@ -26,6 +26,6 @@ Other parameters:
 | -                                  | --min_af                      | FLOAT | 0.05    | [EXPERIMENTAL] minimum AF when clustering                                                                                                                                                                               |
 | -                                  | --n_max_coverage              | INT   | 10000   | [EXPERIMENTAL] maximum read for clustering                                                                                                                                                                                   |
 | consensus and HIVDB report options | --hivdb_url                   | STR   | ""      | hivdb URL default query from the internet, for localizing the HIVDB, please check https://github.com/hivdb/sierra, and update this setting accordingly, e.g. using --hivdb_url http://localhost:8111/sierra/rest/graphql |
-| -                                  | --number_of_read_for_consense | INT   | 1000    | [EXPERIMENTAL] number of original read for generating consense                                                                                                                                                           |
+| -                                  | --n_of_read_for_consensus | INT   | 1000    | [EXPERIMENTAL] number of original read for generating consensus                                                                                                                                                           |
 | -                                  | --flye_genome_size            | STR   | 5k      | [EXPERIMEANTAL], flye --genome-size for generating consensus, we recommend using 5k for HIV genome                                                                                                                       |
 | -                                  | --flye_nano_type              | STR   | nano-hq | [EXPERIMEANTAL], flye option for different ONT type, default --nano-hq, check https://github.com/fenderglass/Flye/blob/flye/docs/USAGE.md |
