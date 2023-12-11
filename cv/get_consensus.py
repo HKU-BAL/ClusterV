@@ -232,7 +232,7 @@ def run_get_consensus(args):
     _ref = args.ref_fn
     _bed = args.bed_fn
     _hivdb_url = args.hivdb_url
-    _number_of_read_for_consense = args.number_of_read_for_consense
+    _n_of_read_for_consensus = args.n_of_read_for_consensus 
     _hivdb_url_option = '' if _hivdb_url == '' else "--url %s" % (_hivdb_url)
     _flye_genome_size = args.flye_genome_size
     _flye_genome_size_olp = args.flye_genome_size_olp
@@ -307,7 +307,7 @@ def run_get_consensus(args):
             # get consensus
             cmd = 'samtools fasta %s > %s_1' % (_new_bam, _new_bam_read)
             _run_command(cmd, False)
-            cmd = 'head -n %d %s_1 > %s; rm %s_1' % (_number_of_read_for_consense, _new_bam_read, _new_bam_read, _new_bam_read)
+            cmd = 'head -n %d %s_1 > %s; rm %s_1' % (_n_of_read_for_consensus, _new_bam_read, _new_bam_read, _new_bam_read)
             _run_command(cmd, False)
 
             # run flye
