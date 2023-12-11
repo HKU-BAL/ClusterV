@@ -636,7 +636,7 @@ def main():
     parser.add_argument('--bed_fn', type=str, default="region.bed",
                         help="bed region")
 
-    parser.add_argument('--number_of_read_for_consense', type=int, default=1000,
+    parser.add_argument('--n_of_read_for_consensus', type=int, default=1000,
                         help="number of original read for generating consense")
 
     parser.add_argument('--hivdb_url', type=str, default="",
