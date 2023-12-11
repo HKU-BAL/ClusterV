@@ -67,7 +67,7 @@ def initial_run(args):
     _py_s_d = os.path.dirname(os.path.abspath(__file__))
     run_clair_path = "%s/run_Clair_ensemble_cv.sh" % (_py_s_d)
 
-    cmd = "time bash %s %s/%s_f.bam %s %s %s %s/%s.v %s > %s/%s.v/run.log" % \
+    cmd = "bash %s %s/%s_f.bam %s %s %s %s/%s.v %s > %s/%s.v/run.log" % \
     (run_clair_path, _out_dir, _sample_id, _sample_id, _ref, _bed, _out_dir, _sample_id, _cn_threads, _out_dir, _sample_id)
     _run_command(cmd)
 
