@@ -63,7 +63,7 @@ def main():
                         help="hivdb url defalut query from internet, for localize the HIVDB, please check https://github.com/hivdb/sierra, and update this setting accordingly, e.g. \
                         by using --hivdb_url http://localhost:8111/sierra/rest/graphql")
 
-    parser.add_argument('--number_of_read_for_consense', type=int, default=1000,
+    parser.add_argument('--n_of_read_for_consense', type=int, default=1000,
                         help="[EXPERIMENTAL] number of original read for generating consense")
 
     parser.add_argument('--flye_genome_size', type=str, default="5k",

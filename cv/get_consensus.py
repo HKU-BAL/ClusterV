@@ -232,7 +232,7 @@ def run_get_consensus(args):
     _ref = args.ref_fn
     _bed = args.bed_fn
     _hivdb_url = args.hivdb_url
-    _n_of_read_for_consensus = args.n_of_read_for_consensus 
+    _n_of_read_for_consensus = args.n_of_read_for_consensus
     _hivdb_url_option = '' if _hivdb_url == '' else "--url %s" % (_hivdb_url)
     _flye_genome_size = args.flye_genome_size
     _flye_genome_size_olp = args.flye_genome_size_olp
