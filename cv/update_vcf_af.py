@@ -28,8 +28,8 @@ def read_vcf(vcf_fn, is_tree_empty=True, tree=None, is_snp_only=False):
         # chr, pos, ref_base, alt_base, qual, info, info, af
 #         tar_info = [i[0], int(i[1]), i[3], i[4], i[5], i[-2], i[-1], float(i[-1].split(':')[-1])]
         # chr, pos, ref_base, alt_base, qual, af
-        tar_info = [i[0], int(i[1]), i[3], i[4], i[5], float(i[-1].split(':')[-1])]
-        if len(i[3]) == 1 and all([len(_j) == 1 for _j in i[4].split(',')]) == 1:
+        tar_info = [i[0], int(i[1]), i[3], i[4].split(',')[0], i[5], float(i[-1].split(':')[-1].split(',')[0])]  # select alt_base with higher af
+        if len(i[3]) == 1 and len(i[4].split(',')[0]) == 1:
             v_cnt['snp'] += 1
         else:
             v_cnt['indel'] += 1

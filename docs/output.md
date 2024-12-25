@@ -10,7 +10,7 @@
     │   │   ├── all_report.tsv          # drug resistance report for found subtypes
     │   │   ├── all_info.tsv            # statistics for all found subtypes, with abundance information
     │   │   ├── id_1_report.tsv         # HIVDB report for subtype 1
-    │   │   ├── id_1_report.json        # [raw HIVDB](https://hivdb.stanford.edu/page/release-notes/#json.output) report output for subtype 1
+    │   │   ├── id_1_report.0.json        # [raw HIVDB](https://hivdb.stanford.edu/page/release-notes/#json.output) report output for subtype 1
     │   │   ├── id_1.fasta              # consensus for subtype 1
     │   │   ├── id_1                    # data directory for subtype 1
     │   │   │   ├── id_1.bam            # all read alignment in bam file for subtype 1

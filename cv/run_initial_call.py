@@ -17,7 +17,8 @@ def initial_run(args):
     _ref = args.ref_fn
     _sample_id = args.sample_id
     _out_dir = args.out_dir
-    _cn_threads = args.clair_ensemble_threads
+    _platform = args.platform
+    _cn_threads = args.clair3_threads
 
     cmd = 'mkdir -p %s' % (_out_dir)
     _run_command(cmd)
@@ -63,12 +64,12 @@ def initial_run(args):
         _run_command(cmd, False)
 
 
-    print('running clair ensenmble')
+    print('running clair3')
     _py_s_d = os.path.dirname(os.path.abspath(__file__))
-    run_clair_path = "%s/run_Clair_ensemble_cv.sh" % (_py_s_d)
+    run_clair_path = "%s/run_Clair3_cv.sh" % (_py_s_d)
 
-    cmd = "bash %s %s/%s_f.bam %s %s %s %s/%s.v %s > %s/%s.v/run.log" % \
-    (run_clair_path, _out_dir, _sample_id, _sample_id, _ref, _bed, _out_dir, _sample_id, _cn_threads, _out_dir, _sample_id)
+    cmd = "bash %s %s/%s_f.bam %s %s %s %s/%s.v %s %s" % \
+    (run_clair_path, _out_dir, _sample_id, _sample_id, _ref, _bed, _out_dir, _sample_id, _cn_threads, _platform)
     _run_command(cmd)
 
 
@@ -93,8 +94,11 @@ def main():
     parser.add_argument('--indel_l', type=int, default=50,
                         help="filtering read with indel length > indel_l [50], set [0] to disable filtering, optional")
 
-    parser.add_argument('--clair_ensemble_threads', type=int, default=16,
-                        help="Clair-Ensemble threads, we recommend using 16, [16] optional")
+    parser.add_argument('--platform', type=str, default="ont",
+                        help="Sequencing platform of the input. Options: 'ont,hifi,ilmn', default: %(default)s, optional")
+    
+    parser.add_argument('--clair3_threads', type=int, default=16,
+                        help="Clair3 threads, we recommend using 16, [16] optional")
 
     args = parser.parse_args()
 

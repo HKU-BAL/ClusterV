@@ -32,8 +32,11 @@ def main():
     parser.add_argument('--threads', type=int, default=48,
                         help="running threads, we recommend using 48 or above, [48] optional")
 
-    parser.add_argument('--clair_ensemble_threads', type=int, default=16,
-                        help="Clair-Ensemble threads, we recommend using 16, [16] optional")
+    parser.add_argument('--platform', type=str, default="ont",
+                        help="Sequencing platform of the input. Options: 'ont,hifi,ilmn', default: %(default)s, optional")
+    
+    parser.add_argument('--clair3_threads', type=int, default=16,
+                        help="Clair3 threads, we recommend using 16, [16] optional")
 
     parser.add_argument('--subtype_parallel', type=int, default=3,
                         help="[EXPERIMENTAL] number of sutypes parallel run Clair, [3] optional")
@@ -63,8 +66,8 @@ def main():
                         help="hivdb url defalut query from internet, for localize the HIVDB, please check https://github.com/hivdb/sierra, and update this setting accordingly, e.g. \
                         by using --hivdb_url http://localhost:8111/sierra/rest/graphql")
 
-    parser.add_argument('--n_of_read_for_consense', type=int, default=1000,
-                        help="[EXPERIMENTAL] number of original read for generating consense")
+    parser.add_argument('--n_of_read_for_consensus', type=int, default=1000,
+                        help="[EXPERIMENTAL] number of original read for generating consensus")
 
     parser.add_argument('--flye_genome_size', type=str, default="5k",
                         help="[EXPERIMEANTAL], flye --genome-size for generating consensus, we recommand using 5k for HIV genome")
@@ -89,18 +92,18 @@ def main():
     _sample_id = args.sample_id
     _threads = args.threads
     _subtype_parallel = args.subtype_parallel
-    args.clair_ensemble_threads = int(args.threads / args.subtype_parallel)
+    args.clair3_threads = int(args.threads / args.subtype_parallel)
 
     # run initial run
     print("-----------------------------\n[ ** STEP 1 ** ] begin initial run\n")
     initial_run(args)
 
     # run clusterV
-    args.vcf_fn = "%s/%s.v/out.vcf" % (_out_dir, _sample_id)
+    args.vcf_fn = "%s/%s.v/pileup.vcf.gz" % (_out_dir, _sample_id)
     args.bam_fn = "%s/%s_f.bam" % (_out_dir, _sample_id)
     args.out_dir = "%s/clustering" % (_out_dir)
     print("-----------------------------")
-    print("[ ** STEP 2 ** ] begin clusterV run, with [%s threads, parallel %s subtypes with %s clair-ensemble threads]\n" % (args.threads, args.subtype_parallel, args.clair_ensemble_threads))
+    print("[ ** STEP 2 ** ] begin clusterV run, with [%s threads, parallel %s subtypes with %s clair3 threads]\n" % (args.threads, args.subtype_parallel, args.clair3_threads))
     CV_run(args)
 
     # get consensus and get HIVDB report

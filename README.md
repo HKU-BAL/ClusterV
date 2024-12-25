@@ -38,13 +38,15 @@ ClusterV is a standalone pipeline for accurately identifying HIV quasispecies fr
 
 ## Latest Update
 
+*v1.3 (Dec 25, 2024)*: Switch from Clair-ensemble to Clair3.
+
 *v1.2 (Nov 24, 2023)*: Update Flye [option](https://github.com/fenderglass/Flye/blob/flye/docs/USAGE.md) to support ONT Guppy5+ SUP or Q20 data.
 
 *v1.1 (Dec 1, 2022)*: Initial release.
 
 ## Installation
 
-### Option 1. Docker pre-built image
+### Option 1. Docker pre-built image (Unchanged)
 A pre-built docker image is available [here](https://hub.docker.com/repository/docker/hkubal/clusterv). With it you can run ClusterV using a single command.
 
 Caution: Absolute path is needed for both `INPUT_DIR` and `OUTPUT_DIR`.
@@ -89,7 +91,7 @@ pypy3 -m pip install --no-cache-dir intervaltree==3.0.2
 python cv.py ClusterV --help
 ```
 
-### Option 3. Docker Dockerfiles
+### Option 3. Docker Dockerfiles (Unchanged)
 Building a docker image.
 
 ```
