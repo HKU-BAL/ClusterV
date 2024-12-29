@@ -46,8 +46,10 @@ def read_vcf(vcf_fn):
         # chr, pos, ref_base, alt_base, qual, info, info, af
 #         tar_info = [i[0], int(i[1]), i[3], i[4], i[5], i[-2], i[-1], float(i[-1].split(':')[-1])]
         # chr, pos, ref_base, alt_base, qual, af
-        tar_info = [i[0], int(i[1]), i[3], i[4].split(',')[0], float(i[-1].split(':')[-1].split(',')[0]), columns]  # select alt_base with higher af
-        if len(i[3]) == 1 and len(i[4].split(',')[0]) == 1:
+        af_list = [float(af) for af in i[-1].split(':')[-1].split(',')]
+        max_af_idx = af_list.index(max(af_list))  # select the alt_base with the largest af
+        tar_info = [i[0], int(i[1]), i[3], i[4].split(',')[max_af_idx], af_list[max_af_idx], columns]
+        if len(i[3]) == 1 and len(i[4].split(',')[max_af_idx]) == 1:
             v_cnt['snp'] += 1
         else:
             v_cnt['indel'] += 1

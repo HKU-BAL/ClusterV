@@ -1,0 +1,3 @@
+[submodule "Clair3"]
+	path = Clair3
+	url = https://github.com/HKU-BAL/Clair3.git

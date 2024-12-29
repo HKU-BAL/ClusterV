@@ -46,7 +46,7 @@ ClusterV is a standalone pipeline for accurately identifying HIV quasispecies fr
 
 ## Installation
 
-### Option 1. Docker pre-built image (Unchanged)
+### Option 1. Docker pre-built image (Not Updated)
 A pre-built docker image is available [here](https://hub.docker.com/repository/docker/hkubal/clusterv). With it you can run ClusterV using a single command.
 
 Caution: Absolute path is needed for both `INPUT_DIR` and `OUTPUT_DIR`.
@@ -77,7 +77,9 @@ docker run -it \
 
 ```
 # get ClusterV code
-git clone https://github.com/HKU-BAL/ClusterV.git
+git clone -b v1.3 --recursive https://github.com/HKU-BAL/ClusterV.git
+# if you see nothing in the Clair3 folder, please run:
+# git submodule update --init --recursive
 cd ClusterV
 
 # create env
@@ -85,13 +87,23 @@ conda env create -f clusterV.yml
 conda activate clusterV 
 
 pypy3 -m ensurepip
+pypy3 -m pip install mpmath==1.2.1
 pypy3 -m pip install --no-cache-dir intervaltree==3.0.2
+
+# prepare for Clair3
+cd ./Clair3
+make PREFIX=${CONDA_PREFIX}
+# download pre-trained models to folder ./Clair3/models
+mkdir models
+wget http://www.bio8.cs.hku.hk/clair3/clair3_models/clair3_models.tar.gz 
+tar -zxvf clair3_models.tar.gz -C ./models
+cd ..
 
 # run ClusterV
 python cv.py ClusterV --help
 ```
 
-### Option 3. Docker Dockerfiles (Unchanged)
+### Option 3. Docker Dockerfiles (Not Updated)
 Building a docker image.
 
 ```
