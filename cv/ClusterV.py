@@ -32,15 +32,25 @@ def main():
     parser.add_argument('--threads', type=int, default=48,
                         help="running threads, we recommend using 48 or above, [48] optional")
 
+    parser.add_argument('--subtype_parallel', type=int, default=3,
+                        help="[EXPERIMENTAL] number of sutypes parallel run Clair, [3] optional")
+    
+    # clair3 options
     parser.add_argument('--platform', type=str, default="ont",
                         help="Sequencing platform of the input. Options: 'ont,hifi,ilmn', default: %(default)s, optional")
     
     parser.add_argument('--clair3_threads', type=int, default=16,
                         help="Clair3 threads, we recommend using 16, [16] optional")
+    
+    parser.add_argument('--haploid_precise', action='store_true',
+                        help="[EXPERIMENTAL] Enable haploid calling mode. Only 1/1 is considered as a variant")
 
-    parser.add_argument('--subtype_parallel', type=int, default=3,
-                        help="[EXPERIMENTAL] number of sutypes parallel run Clair, [3] optional")
-
+    parser.add_argument('--haploid_sensitive', action='store_true',
+                        help="[EXPERIMENTAL] Enable haploid calling mode. 0/1 and 1/1 are considered as a variant")
+    
+    parser.add_argument('--clair3_model_path', type=str, default="../Clair3/models/ont",
+                        help="The absolute folder path containing a Clair3 model (requiring six files in the folder, including pileup.data-00000-of-00002, pileup.data-00001-of-00002 pileup.index, full_alignment.data-00000-of-00002, full_alignment.data-00001-of-00002  and full_alignment.index)")
+    
     # initial filtering options
     parser.add_argument('--indel_l', type=int, default=50,
                         help="filtering read with indel length > indel_l [50], set [0] to disable filtering, optional")

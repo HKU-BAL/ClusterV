@@ -46,7 +46,7 @@ ClusterV is a standalone pipeline for accurately identifying HIV quasispecies fr
 
 ## Installation
 
-### Option 1. Docker pre-built image (Not Updated)
+### Option 1. Docker pre-built image
 A pre-built docker image is available [here](https://hub.docker.com/repository/docker/hkubal/clusterv). With it you can run ClusterV using a single command.
 
 Caution: Absolute path is needed for both `INPUT_DIR` and `OUTPUT_DIR`.
@@ -59,16 +59,19 @@ INPUT_BAM=${INPUT_DIR}/mix_ds.bam                   # change your bam file name 
 SAMPLE_ID="mix_ds"                                  # change your sample ID here
 OUTPUT_DIR=`pwd`/out                                # output path, e.g. /output
 THREADS=48                                          # threads, e.g. 48
+# CLAIR3_MODEL_PATH="{YOUR_MODEL_PATH}"               # Optional: change to the absolute path of your clair3_model, defaulting to '../Clair3/models/ont'
 
 docker run -it \
   -v ${INPUT_DIR}:${INPUT_DIR} \
   -v ${OUTPUT_DIR}:${OUTPUT_DIR} \
-  hkubal/clusterv:latest \
-  python /opt/bin/ClusterV/cv.py ClusterV \
+  # -v ${CLAIR3_MODEL_PATH}:${CLAIR3_MODEL_PATH} \  # Optional, delete if unchanged
+  hkubal/clusterv:v1.3 \
+  python /opt/bin/cv.py ClusterV \
   --ref_fn ${INPUT_REF} \
   --bed_fn ${INPUT_BED} \
   --bam_fn ${INPUT_BAM} \
   --sample_id ${SAMPLE_ID} \
+  # --clair3_model_path ${CLAIR3_MODEL_PATH} \  # Optional, delete if unchanged
   --out_dir ${OUTPUT_DIR} \
   --threads ${THREADS}
 ```
@@ -103,20 +106,20 @@ cd ..
 python cv.py ClusterV --help
 ```
 
-### Option 3. Docker Dockerfiles (Not Updated)
+### Option 3. Docker Dockerfiles
 Building a docker image.
 
 ```
 # clone ClusterV
-git clone https://github.com/hku-bal/ClusterV.git
+git clone -b v1.3 --recursive https://github.com/HKU-BAL/ClusterV.git
 cd ClusterV
 
 # build a docker image named hkubal/ClusterV:latest
 # might require docker authentication to build docker image 
-docker build -f ./Dockerfile -t hkubal/clusterv:latest .
+docker build -f ./Dockerfile -t hkubal/clusterv:v1.3 .
 
 # run ClusterV docker image like 
-docker run -it hkubal/clusterv:latest python /opt/bin/ClusterV/cv.py --help
+docker run -it hkubal/clusterv:v1.3 python /opt/bin/cv.py --help
 ```
 
 
@@ -136,12 +139,14 @@ INPUT_REF="{YOUR_INPUT_FASTA}"      # Input reference Fasta file
 INPUT_BED="{YOUR_INPUT_BED}"        # Input BED file for defining the target region
 SAMPLE_ID="{YOUR_SAMPLE_ID}"        # Sample ID
 OUTPUT_DIR="{YOUR_OUTPUT_DIR}"      # Output path
+CLAIR3_MODEL_PATH="{YOUR_MODEL_PATH}"  # Optional: change to the absolute path of your clair3_model, defaulting to '../Clair3/models/ont'
 
 python ${CV_DIR}/cv.py ClusterV \
  --bam_fn ${INPUT_BAM} \
  --ref_fn ${INPUT_REF} \
  --bed_fn ${INPUT_BED} \
  --sample_id ${SAMPLE_ID} \
+ --clair3_model_path ${CLAIR3_MODEL_PATH} \  # Optional, delete if unchanged
  --out_dir ${OUTPUT_DIR}
 ```
 

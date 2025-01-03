@@ -1,8 +1,8 @@
 name: clusterV
 channels:
   - anaconda
-  - conda-forge
   - bioconda
+  - conda-forge
   - defaults
 dependencies:
   - _libgcc_mutex=0.1=conda_forge
@@ -33,7 +33,7 @@ dependencies:
   - cached-property=1.5.2=hd8ed1ab_1
   - cached_property=1.5.2=pyha770c72_1
   - cachetools=5.5.0=pyhd8ed1ab_1
-  - certifi=2024.12.14=py39h06a4308_0
+  - certifi=2024.12.14=pyhd8ed1ab_0
   - cffi=1.14.4=py39he88106c_0
   - charset-normalizer=3.4.0=pyhd8ed1ab_1
   - click=8.1.8=pyh707e725_0
@@ -136,7 +136,7 @@ dependencies:
   - numpy=1.26.4=py39h474f0d3_0
   - oauthlib=3.2.2=pyhd8ed1ab_1
   - openjpeg=2.4.0=h9ca470c_2
-  - openssl=1.1.1w=h7f8727e_0
+  - openssl=1.1.1w=hd590300_0
   - opt_einsum=3.4.0=pyhd8ed1ab_1
   - packaging=24.2=pyhd8ed1ab_2
   - pandas=1.5.3=py39h417a72b_0
@@ -190,9 +190,10 @@ dependencies:
   - tensorboard=2.8.0=pyhd8ed1ab_1
   - tensorboard-data-server=0.6.1=py39hd97740a_4
   - tensorboard-plugin-wit=1.8.1=pyhd8ed1ab_0
-  - tensorflow=2.8.0=cuda110py39hcfb7b87_0
-  - tensorflow-base=2.8.0=cuda110py39h3c9bc52_0
-  - tensorflow-estimator=2.8.0=cuda110py39ha53fd0e_0
+  - tensorflow=2.8.0=cpu_py39h4655687_0
+  - tensorflow-base=2.8.0=cpu_py39h7e02d9e_0
+  - tensorflow-cpu=2.8.0=cpu_py39h718b53a_0
+  - tensorflow-estimator=2.8.0=cpu_py39heaff504_0
   - termcolor=2.5.0=pyhd8ed1ab_1
   - threadpoolctl=3.5.0=py39h2f386ee_0
   - tk=8.6.13=noxft_h4845f30_101
@@ -208,9 +209,6 @@ dependencies:
   - wheel=0.45.1=pyhd8ed1ab_1
   - wrapt=1.17.0=py39h8cd3c5a_0
   - xopen=2.0.2=pyh707e725_2
-  - xz=5.2.6=h166bdaf_0
-  - xz-gpl-tools=5.6.3=hbcc6ac9_1
-  - xz-tools=5.6.3=hb9d3cd8_1
   - yarl=1.18.3=py39h8cd3c5a_0
   - zipp=3.21.0=pyhd8ed1ab_1
   - zlib=1.2.13=h4ab18f5_6

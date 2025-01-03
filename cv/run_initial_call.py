@@ -19,6 +19,9 @@ def initial_run(args):
     _out_dir = args.out_dir
     _platform = args.platform
     _cn_threads = args.clair3_threads
+    _clair3_model_path = args.clair3_model_path
+    _haploid_precise = args.haploid_precise
+    _haploid_sensitive = args.haploid_sensitive
 
     cmd = 'mkdir -p %s' % (_out_dir)
     _run_command(cmd)
@@ -68,8 +71,8 @@ def initial_run(args):
     _py_s_d = os.path.dirname(os.path.abspath(__file__))
     run_clair_path = "%s/run_Clair3_cv.sh" % (_py_s_d)
 
-    cmd = "bash %s %s/%s_f.bam %s %s %s %s/%s.v %s %s" % \
-    (run_clair_path, _out_dir, _sample_id, _sample_id, _ref, _bed, _out_dir, _sample_id, _cn_threads, _platform)
+    cmd = f"bash {run_clair_path} {_out_dir}/{_sample_id}_f.bam {_sample_id} {_ref} {_bed} {_out_dir}/{_sample_id}.v \
+        {_cn_threads} {_platform} {_clair3_model_path} {_haploid_precise} {_haploid_sensitive}"
     _run_command(cmd)
 
 
@@ -99,6 +102,15 @@ def main():
     
     parser.add_argument('--clair3_threads', type=int, default=16,
                         help="Clair3 threads, we recommend using 16, [16] optional")
+    
+    parser.add_argument('--haploid_precise', action='store_true',
+                        help="[EXPERIMENTAL] Enable haploid calling mode. Only 1/1 is considered as a variant")
+
+    parser.add_argument('--haploid_sensitive', action='store_true',
+                        help="[EXPERIMENTAL] Enable haploid calling mode. 0/1 and 1/1 are considered as a variant")
+    
+    parser.add_argument('--clair3_model_path', type=str, default="../Clair3/models/ont",
+                        help="The absolute folder path containing a Clair3 model (requiring six files in the folder, including pileup.data-00000-of-00002, pileup.data-00001-of-00002 pileup.index, full_alignment.data-00000-of-00002, full_alignment.data-00001-of-00002  and full_alignment.index)")
 
     args = parser.parse_args()
 
