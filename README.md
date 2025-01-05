@@ -26,12 +26,13 @@ ClusterV is a standalone pipeline for accurately identifying HIV quasispecies fr
 * [Installation](#installation)
   + [Option 1. Docker pre-built image](#option-1-docker-pre-built-image)
   + [Option 2. Build an anaconda virtual environment](#option-2-build-an-anaconda-virtual-environment)
-  + [Option 3. Docker Dockerfile](#option-2-docker-dockerfile)
+  + [Option 3. Docker Dockerfile](#option-3-docker-dockerfiles)
 * [Usage](#usage)
   + [Parameters](/docs/options.md)
   + [Understand output files](/docs/output.md)
 * [Quick demo](#quick-demo)
 * [Using localized HIVdb](#using-localized-hivdb)
+* [Changing pre-trained models of Clair3](#changing-pre-trained-models-of-clair3)
 * [Acknowledgement](#acknowledgement)
 * [Publication](#publication)
 
@@ -59,7 +60,7 @@ INPUT_BAM=${INPUT_DIR}/mix_ds.bam                   # change your bam file name 
 SAMPLE_ID="mix_ds"                                  # change your sample ID here
 OUTPUT_DIR=`pwd`/out                                # output path, e.g. /output
 THREADS=48                                          # threads, e.g. 48
-# CLAIR3_MODEL_PATH="{YOUR_MODEL_PATH}"               # Optional: change to the absolute path of your clair3_model, defaulting to '../Clair3/models/ont'
+# CLAIR3_MODEL_PATH="{YOUR_MODEL_PATH}"             # Optional: change to the absolute path of your clair3_model, defaulting to '../Clair3/models/ont'
 
 docker run -it \
   -v ${INPUT_DIR}:${INPUT_DIR} \
@@ -71,7 +72,7 @@ docker run -it \
   --bed_fn ${INPUT_BED} \
   --bam_fn ${INPUT_BAM} \
   --sample_id ${SAMPLE_ID} \
-  # --clair3_model_path ${CLAIR3_MODEL_PATH} \  # Optional, delete if unchanged
+  # --clair3_model_path ${CLAIR3_MODEL_PATH} \      # Optional, delete if unchanged
   --out_dir ${OUTPUT_DIR} \
   --threads ${THREADS}
 ```
@@ -134,11 +135,11 @@ Make sure you are in the clusterV environment by using `conda activate clusterV`
 
 ```bash
 CV_DIR="{ClusterV repo path}"
-INPUT_BAM="{YOUR_INPUT_BAM}"        # Input BAM file
-INPUT_REF="{YOUR_INPUT_FASTA}"      # Input reference Fasta file
-INPUT_BED="{YOUR_INPUT_BED}"        # Input BED file for defining the target region
-SAMPLE_ID="{YOUR_SAMPLE_ID}"        # Sample ID
-OUTPUT_DIR="{YOUR_OUTPUT_DIR}"      # Output path
+INPUT_BAM="{YOUR_INPUT_BAM}"           # Input BAM file
+INPUT_REF="{YOUR_INPUT_FASTA}"         # Input reference Fasta file
+INPUT_BED="{YOUR_INPUT_BED}"           # Input BED file for defining the target region
+SAMPLE_ID="{YOUR_SAMPLE_ID}"           # Sample ID
+OUTPUT_DIR="{YOUR_OUTPUT_DIR}"         # Output path
 CLAIR3_MODEL_PATH="{YOUR_MODEL_PATH}"  # Optional: change to the absolute path of your clair3_model, defaulting to '../Clair3/models/ont'
 
 python ${CV_DIR}/cv.py ClusterV \
@@ -198,6 +199,36 @@ python ${CV_DIR}/cv.py ClusterV \
 --sample_id ${SAMPLE_ID} \
 --out_dir ${OUTPUT_DIR}
 ```
+
+## Changing pre-trained models of [Clair3](https://github.com/HKU-BAL/Clair3)
+
+You can modify the models used by Clair3 for variant calling by specifying `--clair3_model_path`. 
+
+Caution: Absolute path is needed for `--clair3_model_path`.
+
+In the clusterV environment, set `CLAIR3_MODEL_PATH` to the folder where your Clair3 models are located. When running `ClusterV`, add `--clair3_model_path ${CLAIR3_MODEL_PATH}`. By default, `--clair3_model_path` is set to `'../Clair3/models/ont'`, which refers to the `'ont'` models extracted in `Clair3/models/`. For usage, please refer to [Usage](#usage).
+
+In a Docker image, HKU-provided models are located in `/opt/bin/Clair3/models/`. If you use the models in the Docker image, add `--clair3_model_path /opt/bin/Clair3/models/MODEL_NAME` to specify the model with `MODEL_NAME`. The available `MODEL_NAME`s are listed in [HKU-provided Models](#hku-provided-models). If you use models outside the image, you need to mount the folder containing the models using `-v` when running Docker, and then modify `--clair3_model_path`. For usage, please refer to [Option 1. Docker pre-built image](#option-1-docker-pre-built-image).
+
+The following lists the available pre-trained models of Clair3. When specifying `--clair3_model_path`, be sure to modify `--platform` accordingly.
+
+### HKU-provided Models
+
+Download models from [here](http://www.bio8.cs.hku.hk/clair3/clair3_models/) or click on the links below.
+
+
+|           Model name           |  Platform   | Option (`--platform`) |                       Training samples                       |   Date   |
+| :----------------------------: | :---------: | :----------------------------------------------------------: | -------------------------------- | :------: |
+|      r941_prom_sup_g5014 / ont_guppy5       |     ONT r9.4.1     |     `ont`     |                    HG002,4,5 (Guppy5_sup)                    | 20220112 |
+|    r941_prom_hac_g360+g422 / ont     |     ONT r9.4.1    | `ont`    |                         HG001,2,4,5                          | 20210517 |
+|       r941_prom_hac_g238 / ont_guppy2       |     ONT r9.4.1    | `ont`    |                         HG001,2,3,4                          | 20210627 |
+|              hifi_revio              | PacBio HiFi Revio | `hifi` |                         HG002,4                         | 20230522 |
+|             hifi_sequel2 / hifi             | PacBio HiFi Sequel II | `hifi` |                         HG001,2,4,5                          | 20210517 |
+| ilmn | Illumina | `ilmn` | HG001,2,4,5 | 20210517 |
+
+### ONT-provided Models
+
+ONT provides models for some latest or specific chemistries and basecallers (including both Guppy and Dorado) through [Rerio](https://github.com/nanoporetech/rerio). These models are tested and supported by the ONT developers.
 
 ## Acknowledgement
 
