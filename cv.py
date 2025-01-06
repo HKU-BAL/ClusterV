@@ -1,7 +1,7 @@
 import sys
 from importlib import import_module
 REPO_NAME="clusterV"
-VERSION="1.2"
+VERSION="1.3"
 
 CV_SCRIPTS_FOLDER="cv"
 

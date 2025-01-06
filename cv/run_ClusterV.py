@@ -114,8 +114,10 @@ def read_vcf(vcf_fn, is_tree_empty=True, tree=None, is_snp_only=False):
         i = columns[:]
         # chr, pos, ref_base, alt_base, qual, info, info, af
         # tar_info = [i[0], int(i[1]), i[3], i[4], i[5], i[-2], i[-1], float(i[-1].split(':')[-1])]
-        tar_info = [i[0], int(i[1]), i[3], i[4], i[5], float(i[-1].split(':')[-1])]
-        if len(i[3]) == 1 and all([len(_j) == 1 for _j in i[4].split(',')]) == 1:
+        af_list = [float(af) for af in i[-1].split(':')[-1].split(',')]
+        max_af_idx = af_list.index(max(af_list))  # select the alt_base with the largest af
+        tar_info = [i[0], int(i[1]), i[3], i[4].split(',')[max_af_idx], i[5], af_list[max_af_idx]]
+        if len(i[3]) == 1 and len(i[4].split(',')[max_af_idx]) == 1:
             v_cnt['snp'] += 1
         else:
             v_cnt['indel'] += 1
@@ -421,7 +423,7 @@ def get_clusers_from_peaks(all_peak_af, vcf_d, _bam,  MAX_SNP_IN_CLUSTER = 15, M
 
 
 # run cluster and return node and their percentage
-def run_clustering(_candidate_item, tree, is_tree_empty, _ref, _bed, _n_max_candidates=15, _min_af=0.05, _n_max_coverage=10000, _n_min_supports=50, _cn_threads=16, _subtype_parallel=3):
+def run_clustering(_candidate_item, tree, is_tree_empty, _ref, _bed, _n_max_candidates=15, _min_af=0.05, _n_max_coverage=10000, _n_min_supports=50, _platform="ont", _cn_threads=16, _clair3_model_path="../Clair3/models/ont", _subtype_parallel=3, _haploid_precise=False, _haploid_sensitive=False):
     _vcf, _bam, _out_dir, _sample_id, _sample_idx, is_check_clustering, percentage, _v_info = _candidate_item
     print('=========================\nrun', _sample_id, _sample_idx, is_check_clustering, percentage, _v_info)
     cmd = f"mkdir -p {_out_dir}"
@@ -545,19 +547,19 @@ def run_clustering(_candidate_item, tree, is_tree_empty, _ref, _bed, _n_max_cand
     cmd = 'ls %s/%s.tagged.tag*.bam | parallel "mkdir -p %s/{/}_dir"' % (_out_dir, _sample_idx, _out_dir)
     _run_command(cmd)
 
-    print('running clair ensenmble')
+    print('running clair3')
     _py_s_d = os.path.dirname(os.path.abspath(__file__))
-    run_clair_path = "%s/run_Clair_ensemble_cv.sh" % (_py_s_d)
+    run_clair_path = "%s/run_Clair3_cv.sh" % (_py_s_d)
 
     #cmd = 'cd %s; ls %s/%s.tagged.tag*.bam |  parallel -j %s --joblog %s/run_all.log "time bash %s %s/{/} {/} %s %s %s/{/}_dir %s > %s/{/}_dir/run.log"' % \
-    cmd = 'cd %s; ls %s/%s.tagged.tag*.bam |  parallel -j %s --joblog %s/run_all.log "bash %s %s/{/} {/} %s %s %s/{/}_dir %s > %s/{/}_dir/run.log"' % \
-    (_out_dir, _out_dir, _sample_idx, _subtype_parallel, _out_dir, run_clair_path, _out_dir, _ref, _bed, _out_dir, _cn_threads, _out_dir)
+    cmd = 'cd %s; ls %s/%s.tagged.tag*.bam |  parallel -j %s --joblog %s/run_all.log "bash %s %s/{/} {/} %s %s %s/{/}_dir %s %s %s %s %s > %s/{/}_dir/run.log"' % \
+    (_out_dir, _out_dir, _sample_idx, _subtype_parallel, _out_dir, run_clair_path, _out_dir, _ref, _bed, _out_dir, _cn_threads, _platform, _clair3_model_path, _haploid_precise, _haploid_sensitive, _out_dir)
     _run_command(cmd)
 
     new_clusters = []
     for _tag_i in range(1, len(tag_cnt) + 1):
         new_bam = '%s/%s.tagged.tag%s.bam' % (_out_dir, _sample_idx, _tag_i)
-        new_vcf = '%s/%s.tagged.tag%s.bam_dir/out.vcf' % (_out_dir, _sample_idx, _tag_i)
+        new_vcf = '%s/%s.tagged.tag%s.bam_dir/pileup.vcf.gz' % (_out_dir, _sample_idx, _tag_i)
         new_sample_idx = '%s_%s' % (_sample_idx, _tag_i)
         new_out_dir = '%s/../%s' % (_out_dir, new_sample_idx)
         new_percentage = 1.0 * tag_cnt.loc[_tag_i] / len(trans) * percentage
@@ -582,8 +584,12 @@ def CV_run(args):
     _n_max_coverage = args.n_max_coverage
     _n_max_candidates = args.n_max_candidates
     _n_min_supports = args.n_min_supports
-    _cn_threads = args.clair_ensemble_threads
+    _platform = args.platform
+    _cn_threads = args.clair3_threads
     _subtype_parallel = args.subtype_parallel
+    _clair3_model_path = args.clair3_model_path
+    _haploid_precise = args.haploid_precise
+    _haploid_sensitive = args.haploid_sensitive
 #     _out_dir, _bam_n = '/'.join(_bam.split('/')[:-1]) + '/clustering', _bam.split('/')[-1]
     _out_dir = args.out_dir
     cmd = f"mkdir -p {_out_dir}"
@@ -613,8 +619,9 @@ def CV_run(args):
                 # run clustering at the current node
                 # append all sub clusters in to _new_candidates_list
                 rnt_item = run_clustering(_k, tree, is_tree_empty, _ref, _bed, \
-                        _n_max_candidates=_n_max_candidates, _min_af=_min_af, _n_max_coverage=_n_max_coverage, \
-                        _n_min_supports=_n_min_supports, _cn_threads=_cn_threads, _subtype_parallel=_subtype_parallel)
+                        _n_max_candidates=_n_max_candidates, _min_af=_min_af, _n_max_coverage=_n_max_coverage, _n_min_supports=_n_min_supports, \
+                        _platform=_platform, _cn_threads=_cn_threads, _clair3_model_path=_clair3_model_path, _subtype_parallel=_subtype_parallel, \
+                        _haploid_precise=_haploid_precise, _haploid_sensitive=_haploid_sensitive)
                 _new_candidates_list = _new_candidates_list + rnt_item
                 _flag_run_cluster = 0
             else:
@@ -626,7 +633,8 @@ def CV_run(args):
     for _k in _candidates_list:
         if _k[5] == 0 or _k[5] == 2:
             _k[5] = 2
-            rnt_item = run_clustering(_k, tree, is_tree_empty, _ref, _bed)
+            rnt_item = run_clustering(_k, tree, is_tree_empty, _ref, _bed, _platform=_platform, _cn_threads=_cn_threads, \
+                                      _clair3_model_path=_clair3_model_path, _haploid_precise=_haploid_precise, _haploid_sensitive=_haploid_sensitive)
             _new_candidates_list = _new_candidates_list + rnt_item
         else:
             _new_candidates_list.append(_k)
@@ -685,11 +693,23 @@ def main():
     parser.add_argument('--n_min_supports', type=int, default=50,
                         help="minimum read support for creating a subtype, optional")
 
-    parser.add_argument('--clair_ensemble_threads', type=int, default=16,
-                        help="Clair-Ensemble threads, we recommend using 16, [16] optional")
+    parser.add_argument('--platform', type=str, default="ont",
+                        help="Sequencing platform of the input. Options: 'ont,hifi,ilmn', default: %(default)s, optional")
+    
+    parser.add_argument('--clair3_threads', type=int, default=16,
+                        help="Clair3 threads, we recommend using 16, [16] optional")
 
     parser.add_argument('--subtype_parallel', type=int, default=3,
                         help="[EXPERIMENTAL] number of sutypes parallel run Clair, [3] optional")
+    
+    parser.add_argument('--haploid_precise', action='store_true',
+                        help="[EXPERIMENTAL] Enable haploid calling mode. Only 1/1 is considered as a variant")
+
+    parser.add_argument('--haploid_sensitive', action='store_true',
+                        help="[EXPERIMENTAL] Enable haploid calling mode. 0/1 and 1/1 are considered as a variant")
+    
+    parser.add_argument('--clair3_model_path', type=str, default="../Clair3/models/ont",
+                        help="The absolute folder path containing a Clair3 model (requiring six files in the folder, including pileup.data-00000-of-00002, pileup.data-00001-of-00002 pileup.index, full_alignment.data-00000-of-00002, full_alignment.data-00001-of-00002  and full_alignment.index)")
 
     args = parser.parse_args()
 

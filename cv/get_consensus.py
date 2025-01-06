@@ -34,8 +34,10 @@ def read_vcf(vcf_fn):
         # chr, pos, ref_base, alt_base, qual, info, info, af
 #         tar_info = [i[0], int(i[1]), i[3], i[4], i[5], i[-2], i[-1], float(i[-1].split(':')[-1])]
         # chr, pos, ref_base, alt_base, qual, af
-        tar_info = [i[0], int(i[1]), i[3], i[4], float(i[-1].split(':')[-1]), columns]
-        if len(i[3]) == 1 and all([len(_j) == 1 for _j in i[4].split(',')]) == 1:
+        af_list = [float(af) for af in i[-1].split(':')[-1].split(',')]
+        max_af_idx = af_list.index(max(af_list))  # select the alt_base with the largest af
+        tar_info = [i[0], int(i[1]), i[3], i[4].split(',')[max_af_idx], af_list[max_af_idx], columns]
+        if len(i[3]) == 1 and len(i[4].split(',')[max_af_idx]) == 1:
             v_cnt['snp'] += 1
         else:
             v_cnt['indel'] += 1
@@ -285,7 +287,7 @@ def run_get_consensus(args):
             cmd = 'mkdir -p %s' % (_out_dir)
             _run_command(cmd, False)
 
-            # vcf from Clair-Ensemble
+            # vcf from Clair3
             _new_vcf = "%s/%s.vcf.gz" % (_out_dir, _new_id)
             _new_bam = "%s/%s.bam" % (_out_dir, _new_id)
             _new_bam_read = "%s/%s_ori_r.fasta" % (_out_dir, _new_id)
@@ -372,10 +374,10 @@ def run_get_consensus(args):
             _run_command(cmd)
 
             # get drug resistance report
-            cmd = 'sierrapy fasta %s %s > %s/%s_report.json' % (_new_cs, _hivdb_url_option, _all_out_dir, _new_id)
+            cmd = 'sierrapy fasta %s %s -o %s/%s_report.json' % (_new_cs, _hivdb_url_option, _all_out_dir, _new_id)
             _run_command(cmd)
 
-            _f_p = '%s/%s_report.json' % (_all_out_dir, _new_id)
+            _f_p = '%s/%s_report.0.json' % (_all_out_dir, _new_id)
             _f_o = '%s/%s_report.tsv' % (_all_out_dir, _new_id)
 
             all_l = []

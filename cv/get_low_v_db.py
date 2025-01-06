@@ -46,8 +46,10 @@ def read_vcf(vcf_fn):
         # chr, pos, ref_base, alt_base, qual, info, info, af
 #         tar_info = [i[0], int(i[1]), i[3], i[4], i[5], i[-2], i[-1], float(i[-1].split(':')[-1])]
         # chr, pos, ref_base, alt_base, qual, af
-        tar_info = [i[0], int(i[1]), i[3], i[4], float(i[-1].split(':')[-1]), columns]
-        if len(i[3]) == 1 and all([len(_j) == 1 for _j in i[4].split(',')]) == 1:
+        af_list = [float(af) for af in i[-1].split(':')[-1].split(',')]
+        max_af_idx = af_list.index(max(af_list))  # select the alt_base with the largest af
+        tar_info = [i[0], int(i[1]), i[3], i[4].split(',')[max_af_idx], af_list[max_af_idx], columns]
+        if len(i[3]) == 1 and len(i[4].split(',')[max_af_idx]) == 1:
             v_cnt['snp'] += 1
         else:
             v_cnt['indel'] += 1
@@ -175,7 +177,7 @@ def _get_p(_t, _m, _G_map):
     return _G_map[str(_t)] + 3 * int(_p) - 1
 
 def run(args):
-    _ori_vcf = args.ori_vcf # all v vcf from clair-ensemble
+    _ori_vcf = args.ori_vcf # all v vcf from clair3
     _cns_vcf = args.cns_vcf # consensus vcf from flye
     _sample_id = args.sample_id # sample_id
     _ori_sample_id = args.sample_ori_id # ori_sample_id
