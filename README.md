@@ -81,7 +81,7 @@ docker run -it \
 
 ```
 # get ClusterV code
-git clone -b v1.3 --recursive https://github.com/HKU-BAL/ClusterV.git
+git clone --recursive https://github.com/HKU-BAL/ClusterV.git
 # if you see nothing in the Clair3 folder, please run:
 # git submodule update --init --recursive
 cd ClusterV
@@ -112,7 +112,7 @@ Building a docker image.
 
 ```
 # clone ClusterV
-git clone -b v1.3 --recursive https://github.com/HKU-BAL/ClusterV.git
+git clone --recursive https://github.com/HKU-BAL/ClusterV.git
 cd ClusterV
 
 # build a docker image named hkubal/ClusterV:latest

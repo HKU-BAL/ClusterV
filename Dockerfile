@@ -26,7 +26,7 @@ RUN wget --quiet https://repo.anaconda.com/miniconda/Miniconda3-latest-Linux-x86
     conda config --add channels defaults && \
     conda config --add channels bioconda && \
     conda config --add channels conda-forge
-# git clone -b v1.3 --recursive https://github.com/HKU-BAL/ClusterV.git
+# git clone --recursive https://github.com/HKU-BAL/ClusterV.git
 
 COPY . .
     
