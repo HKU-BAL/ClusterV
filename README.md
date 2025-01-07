@@ -39,7 +39,7 @@ ClusterV is a standalone pipeline for accurately identifying HIV quasispecies fr
 
 ## Latest Update
 
-*v1.3 (Dec 25, 2024)*: Switch from Clair-ensemble to Clair3.
+*v1.3 (Dec 25, 2024)*: Support using [Clair3](https://github.com/HKU-BAL/Clair3) for variant calling.
 
 *v1.2 (Nov 24, 2023)*: Update Flye [option](https://github.com/fenderglass/Flye/blob/flye/docs/USAGE.md) to support ONT Guppy5+ SUP or Q20 data.
 
@@ -200,7 +200,7 @@ python ${CV_DIR}/cv.py ClusterV \
 --out_dir ${OUTPUT_DIR}
 ```
 
-## Changing pre-trained models of [Clair3](https://github.com/HKU-BAL/Clair3)
+## Changing pre-trained models of Clair3
 
 You can modify the models used by Clair3 for variant calling by specifying `--clair3_model_path`. 
 
